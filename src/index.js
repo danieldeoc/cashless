@@ -1,17 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import CategoriesSettings from './components/pages/categoriesSettings';
+import ProductsCatalog from './components/pages/productsCatalog';
+import Navigator from './components/elements/navigator';
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link} from "react-router-dom";
+import RegisterExpenses from './components/pages/registerExpenses';
+import BankAccounts from './components/pages/bankAccounts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+  
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+  <Router>
+        <Navigator />
+        <Routes>            
+            <Route exact path="/products" element={<ProductsCatalog />} />
+            <Route path="/categories" element={<CategoriesSettings /> } />
+            <Route path="/expenses" element={<RegisterExpenses /> } />
+            <Route path="/bankaccounts" element={<BankAccounts /> } />
+        </Routes>
+    </Router> 
+);
