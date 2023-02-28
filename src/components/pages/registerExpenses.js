@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
 /* 
     in order to register a new expenses it will:
     a) perform a produc catalog search
@@ -46,6 +46,9 @@ function RegisterExpenses(){
     const [weightUnits, setWeightUnits] = useState([]);
     const [productList, setProductList] = useState([]);
     const [productListOptions, setProductListOptions] = useState([]);
+    const [productCategories, setProductCategories] = useState([]);
+    const [productCategoriesCatalog, setProductCategoriesCatalog] = useState([]);
+    const [productSubCategories, setProductSubCategories] = useState([]);
     
     /* ########################## */
     // Interface Constants
@@ -53,8 +56,19 @@ function RegisterExpenses(){
 
     /* ########################## */
     // Expense Constants
-    const [expenseName, setExpenseName] = useState("")
+    const [expenseName, setExpenseName] = useState("");
+    const [expenseCategory, setExpenseCategory] = useState("");
+    const [expenseSubCategories, setExpenseSubCategories] = useState([]);
+    const [expensePrice, setExpensePrice] = useState(0.00);
+    const [expenseAmmount, setExpenseAmmount] = useState(1);
+    const [expenseAmmountType, setExpenseAmmountType] = useState("")
+    const [expenseBankAccount, setExpenseBankAccount] = useState("");
+    const [expensePayMethod, setExpensePayMethod] = useState("");
 
+
+
+    /* ########################## */
+    // Get the list of bank accounts
     function getBankAccounts(){
         let bankAccountLIst = [];
         let accountCatalog = [];
@@ -72,6 +86,7 @@ function RegisterExpenses(){
                 }
             });
             setAccountCatalog(accountCatalog)
+            setExpenseBankAccount(accountCatalog[0].Account)
             setPayMethodsChange(accountCatalog, accountCatalog[0].Account)
             setBankAccounts(
                 bankAccountLIst.map( (key, i) => (
@@ -92,6 +107,7 @@ function RegisterExpenses(){
                 <option key={i} >{payM}</option>
             ))  
         )
+        setExpensePayMethod( accountFind.PayMethods[0])
     }
 
     /* ########################## */
@@ -99,12 +115,13 @@ function RegisterExpenses(){
     function getProductUnits(){
         getDoc(doc(db, "settings", "product_settings"))
             .then( (snap) => (
-            setWeightUnits(
-                snap.data().Weights.map( (key, i) => (
-                    <option key={i}>{key}</option>
-                ))
-            )
-        ))
+                setWeightUnits(
+                    snap.data().Weights.map( (key, i) => (
+                        <option key={i}>{key}</option>
+                    ))
+                ),
+                setExpenseAmmountType(snap.data().Weights[0])
+            ))
     }
 
     /* ########################## */
@@ -128,9 +145,15 @@ function RegisterExpenses(){
         console.log(productList)
         setProductListOptions(
             catalog.map( (product, i) => (
-                <li key={i} onClick={ () => { setExpenseName(product.Name) } }>{product.Name}</li>
+                <li key={i} onClick={ () => { 
+                    setExpenseName(product.Name);
+                    document.getElementById("expenseName").value = product.Name;
+                    let li = document.querySelectorAll(".optionList li")
+                    li.forEach( (node) => {
+                        node.classList.remove("show")
+                    })
+                } }>{product.Name}</li>
             ))
-
         )
     }
 
@@ -141,7 +164,7 @@ function RegisterExpenses(){
         const addBt = document.getElementById("quickAddNewProduc")
         const list = document.querySelectorAll(".optionList li")
         const buttonShow = productList.find( ({Name}) => Name.includes(product) );
-        
+        setExpenseName(product)
         if(buttonShow != undefined){
             addBt.classList.add("hide")
         } else {
@@ -156,22 +179,123 @@ function RegisterExpenses(){
         })
         
     }
+
+    /* ########################## */
+    // Get categories
+    async function getProductCategories(){
+        const categories = []; 
+        const queryList = query(collection(db, "categories"), orderBy('Name', 'asc')) 
+        await getDocs(queryList).then( (snapshot) => {              
+            snapshot.docs.forEach((doc) => {
+                categories.push({ ...doc.data(), id: doc.id})
+            })
+            
+            setProductCategoriesCatalog(categories);
+            setProductCategories(
+                categories.map((key, i) => (
+                    <option key={i}>
+                        {key.Name}
+                    </option>
+                ))
+            );
+            setSubCategories(categories[0].Name, categories)
+            setExpenseCategory(categories[0].Name)
+        }).catch( (err) => {
+            console.log("err")
+        });
+    }
+    
+    /* ########################## */
+    // Define subcategories
+    function setSubCategories(category, catalog){
+        setProductSubCategories("");
+        const subCatsCatalog = catalog.find( ({Name}) => Name == category );
+        if( subCatsCatalog.Childs.length > 0){
+            // clean the subcategories
+            const selector = document.querySelector(".subCategorySelector");
+            selector.childNodes.forEach( (item) => {
+                item.childNodes[0].checked = false;
+            })
+            
+            // set the subcategories
+            setProductSubCategories(
+                subCatsCatalog.Childs.map( (item, i) => (
+                    <label key={i}>
+                        <input type="checkbox" value={item} onClick={ () => {
+                        manageSubCategories({item})
+                    }}/>{item}
+                    </label>
+                )),
+            )
+        } else {
+            setProductSubCategories([]);
+        }
+        setExpenseSubCategories([]);
+    }
  
     /* ########################## */
+    // Manange subcategories
+    function manageSubCategories(subCategories){
+        let subCategoriesTemp = [];
+        const selector = document.querySelector(".subCategorySelector");
+        selector.childNodes.forEach( (item) => {
+            if( item.childNodes[0].checked) {
+                subCategoriesTemp.push(item.childNodes[0].value)
+            }
+        });
+        setExpenseSubCategories(subCategoriesTemp)
+    }
+
+    /* ########################## */
     // Get expenses
-    function getExpenses(){
+    async function getExpenses(){
         const expensesList = []
+        const queryList = query(colRef, orderBy('Name', 'asc')) 
+        await getDocs(queryList).then( (snapshot) => {
+            snapshot.docs.forEach( (doc) => {
+                expensesList.push( {...doc.data(), id: doc.id} )
+            });
+            setListExpenses(
+                expensesList.map( (key) => (
+                    <li>
+                        {key.Name}
+                        {key.Category}
+                        {key.SubCategories}
+                        {key.Price}
+                        {key.Ammount}
+                        {key.AmmountType}
+                        {key.Account}
+                        {key.PaymentMethod}
+                        {Date(key.CreatedAt)}
+                    </li>
+                ))
+            )
+        })
         
     }
 
     /* ########################## */
     // Add and expense
-    function addExpense(){
-
+    async function addExpense(){
+        await addDoc(colRef, {
+            Name: expenseName,
+            Category: expenseCategory,
+            SubCategories: expenseSubCategories,
+            Price: expensePrice,
+            Ammount: expenseAmmount,
+            AmmountType: expenseAmmountType,
+            Account: expenseBankAccount,
+            PaymentMethod: expensePayMethod,
+            CreatedAt: serverTimestamp()
+        }).then( (res) => {
+            console.log("Expense Added", res)
+            getExpenses();
+        }).catch( (err) => console.log(err))
     }
 
     useEffect( () => {
         getProducts();
+        getProductCategories();
         getBankAccounts();
         getProductUnits();
         getExpenses();
@@ -181,9 +305,11 @@ function RegisterExpenses(){
         <>
         
             <h1>New Expense</h1>
+
+            {expenseName} / {expenseCategory} / {expenseSubCategories} / {expensePrice} / {expenseAmmount} / {expenseAmmountType} / {expenseBankAccount} / {expensePayMethod}
             <form>
                 <div className="productGroup">
-                    <input name="Product" defaultValue={expenseName} onKeyUp={ (e) => { filterList(e.target.value) } } />
+                    <input id="expenseName" name="Product" defaultValue={expenseName} onKeyUp={ (e) => { filterList(e.target.value) } } />
                     <div className="productFilter">
                         <ul className="optionList">
                             {productListOptions}
@@ -193,34 +319,46 @@ function RegisterExpenses(){
                 </div>
             </form>
             <div className="categorySelector">
-                <select>
-                    <option></option>
+                <select onChange={(e) => { 
+                    setSubCategories(e.target.value, productCategoriesCatalog); 
+                    setExpenseCategory(e.target.value)
+                }}>
+                    {productCategories}
                 </select>
                 <div className="subCategorySelector">
-                    <input type="checkbox" /> SubCategory
+                    {productSubCategories}
+                    
                 </div>
             </div>
-            Price: <input type="number" />
-            Amount: <input type="number" />
-            Amount type: 
-            <select>
+            Price: <input type="number" value={expensePrice} onChange={ (e) => { setExpensePrice(e.target.value) }} />
+            Amount: <input type="number" value={expenseAmmount}  onChange={ (e) => { setExpenseAmmount(e.target.value) }} />
+            Amount type:  
+            <select onChange={ (e) => { setExpenseAmmountType(e.target.value) }} >
                 {weightUnits}
             </select>
             Bank Account:
-            <select onChange={ (e) => { setPayMethodsChange(accountCatalog, e.target.value) } }>
+            <select onChange={ (e) => { 
+                setPayMethodsChange(accountCatalog, e.target.value);
+                setExpenseBankAccount(e.target.value)
+                let account = accountCatalog.find( ({Account}) => Account === e.target.value)
+                console.log()
+                setExpensePayMethod(account.PayMethods[0])
+            } }>
                 {bankAccounts}
             </select>
             Payment Method:
-            <select>
+            <select onChange={ (e) => { setExpensePayMethod(e.target.value) }}>
                 {payMethods}
             </select>
 
 
-            <button>Save</button>
+            <button onClick={addExpense}>Save</button>
 
         
             <h2>Registered Expenses</h2>
-            {listExpenses}
+            <ul>
+                {listExpenses}
+            </ul>
 
 
         </>
