@@ -134,15 +134,13 @@ function RegisterExpenses(){
                 productCatalog.push({ ...doc.data(), id: doc.id})
             })
             setProductList(productCatalog);
-            produceProductFilter(productCatalog)
+            produceProductFilter(productCatalog);
         })
-        
     }
 
     /* ########################## */
     // Generates quick filter
     function produceProductFilter(catalog){
-        console.log(productList)
         setProductListOptions(
             catalog.map( (product, i) => (
                 <li key={i} onClick={ () => { 
@@ -152,15 +150,17 @@ function RegisterExpenses(){
                     li.forEach( (node) => {
                         node.classList.remove("show")
                     })
+                    updateCategories();
                 } }>{product.Name}</li>
             ))
         )
     }
 
+    
+
     /* ########################## */
     // Add filter functionalit
     function filterList(product){
-        console.log(product)
         const addBt = document.getElementById("quickAddNewProduc")
         const list = document.querySelectorAll(".optionList li")
         const buttonShow = productList.find( ({Name}) => Name.includes(product) );
@@ -177,7 +177,32 @@ function RegisterExpenses(){
                 node.classList.remove("show")
             }
         })
-        
+        updateCategories();
+               
+    }
+
+    function updateCategories(){
+        // update categories and subcategories
+        let product = document.getElementById("expenseName").value;
+        const fillCategories = productList.find( ({Name}) => Name == product );
+        if( fillCategories){
+            //console.log("Fit: ", fillCategories)
+            setExpenseCategory(fillCategories.category)
+            document.getElementById("categorySelector").value = fillCategories.category;
+
+            setSubCategories(fillCategories.category, productCategoriesCatalog)
+            setExpenseSubCategories(fillCategories.categoryChild)
+            
+
+            
+
+            
+            
+
+        } else {
+            console.log("Not fit")
+        } 
+
     }
 
     /* ########################## */
@@ -216,12 +241,11 @@ function RegisterExpenses(){
             selector.childNodes.forEach( (item) => {
                 item.childNodes[0].checked = false;
             })
-            
             // set the subcategories
             setProductSubCategories(
                 subCatsCatalog.Childs.map( (item, i) => (
                     <label key={i}>
-                        <input type="checkbox" value={item} onClick={ () => {
+                        <input id={item} type="checkbox" value={item} onClick={ () => {
                         manageSubCategories({item})
                     }}/>{item}
                     </label>
@@ -277,6 +301,7 @@ function RegisterExpenses(){
     /* ########################## */
     // Add and expense
     async function addExpense(){
+        /*
         await addDoc(colRef, {
             Name: expenseName,
             Category: expenseCategory,
@@ -290,7 +315,28 @@ function RegisterExpenses(){
         }).then( (res) => {
             console.log("Expense Added", res)
             getExpenses();
-        }).catch( (err) => console.log(err))
+        }).catch( (err) => console.log(err)) */
+
+        // reset the submit form
+        setExpenseName("")
+        document.getElementById("expenseName").value = "";
+        setExpenseCategory(productCategoriesCatalog[0].Name)
+        document.getElementById("categorySelector").value = productCategoriesCatalog[0].Name;
+        setSubCategories(productCategoriesCatalog[0].Name, productCategoriesCatalog)
+        setExpenseSubCategories(productCategoriesCatalog[0].Childs)
+        setExpensePrice(0);
+        setExpenseAmmount(1);
+        setExpenseAmmountType(weightUnits[0]);
+        console.log(accountCatalog)
+        setExpenseBankAccount(accountCatalog[0].Account);
+        document.getElementById("bankAccounts").value = accountCatalog[0].Account;
+        setExpensePayMethod(accountCatalog[0].PayMethods[0]); 
+        setPayMethodsChange(accountCatalog, accountCatalog[0].Account);
+        document.getElementById("paymentMethods").value = accountCatalog[0].PayMethods[0];
+        
+
+
+
     }
 
     useEffect( () => {
@@ -309,7 +355,10 @@ function RegisterExpenses(){
             {expenseName} / {expenseCategory} / {expenseSubCategories} / {expensePrice} / {expenseAmmount} / {expenseAmmountType} / {expenseBankAccount} / {expensePayMethod}
             <form>
                 <div className="productGroup">
-                    <input id="expenseName" name="Product" defaultValue={expenseName} onKeyUp={ (e) => { filterList(e.target.value) } } />
+                    <input id="expenseName" name="Product" 
+                        defaultValue={expenseName} 
+                        onKeyUp={ (e) => { filterList(e.target.value) } }
+                         />
                     <div className="productFilter">
                         <ul className="optionList">
                             {productListOptions}
@@ -319,7 +368,7 @@ function RegisterExpenses(){
                 </div>
             </form>
             <div className="categorySelector">
-                <select onChange={(e) => { 
+                <select id="categorySelector" onChange={(e) => { 
                     setSubCategories(e.target.value, productCategoriesCatalog); 
                     setExpenseCategory(e.target.value)
                 }}>
@@ -337,7 +386,7 @@ function RegisterExpenses(){
                 {weightUnits}
             </select>
             Bank Account:
-            <select onChange={ (e) => { 
+            <select id="bankAccounts" onChange={ (e) => { 
                 setPayMethodsChange(accountCatalog, e.target.value);
                 setExpenseBankAccount(e.target.value)
                 let account = accountCatalog.find( ({Account}) => Account === e.target.value)
@@ -347,7 +396,7 @@ function RegisterExpenses(){
                 {bankAccounts}
             </select>
             Payment Method:
-            <select onChange={ (e) => { setExpensePayMethod(e.target.value) }}>
+            <select id="paymentMethods" onChange={ (e) => { setExpensePayMethod(e.target.value) }}>
                 {payMethods}
             </select>
 

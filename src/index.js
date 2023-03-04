@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import CategoriesSettings from './components/pages/categoriesSettings';
-import ProductsCatalog from './components/pages/productsCatalog';
+import CategoriesSettings from './pages/categoriesSettings';
+import ProductsCatalog from './pages/productsCatalog';
 import Navigator from './components/elements/navigator';
 
 import {
@@ -10,8 +10,8 @@ import {
   Routes,
   Route,
   Link} from "react-router-dom";
-import RegisterExpenses from './components/pages/registerExpenses';
-import BankAccounts from './components/pages/bankAccounts';
+import RegisterExpenses from './pages/registerExpenses';
+import BankAccounts from './pages/bankAccounts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
