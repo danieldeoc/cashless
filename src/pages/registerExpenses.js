@@ -68,11 +68,7 @@ function RegisterExpenses(){
 
     /* ################################# */
     // PAGE RENDER
-    // once
-    async function getValues(){
-        
-    }
-    
+    // once    
     const firstRender = useEffect( () => {
         console.log("First render")
         const fetchData = async () => {
@@ -90,29 +86,10 @@ function RegisterExpenses(){
         }
         fetchData();
     }, []);
-    
-    // dependencies
-    const registrationData = [
-        productUnits, 
-        productsCatalog, 
-        accountCatalog, 
-        categoriesCatalog, 
-        expensesCatalog]
 
-    const registrationRender = useEffect( () => {
-        console.log("Var updates")
-        /*
-        console.log("Product Units: ", productUnits);
-        console.log("Product Catalogs: ", productsCatalog)
-        console.log("Accounts Catalogs: ", accountCatalog)
-        console.log("Categories Catalogs: ", categoriesCatalog)
-        console.log("Expenses Catalogs: ", expensesCatalog)
-        */
-        
-    }, [registrationData]);  
-
+    ////////////////
+    // draw the list of expenses
     const draw = useEffect( () => {
-        console.log("init", listExpenses, expensesCatalog)
         if(expensesCatalog[0] !== "Wait..."){
             setListExpenses(
                 expensesCatalog.map( key => ( 
