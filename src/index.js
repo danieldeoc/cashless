@@ -10,7 +10,7 @@ import {
   Routes,
   Route,
   Link} from "react-router-dom";
-import RegisterExpenses from './pages/registerExpenses';
+import RegisterExpenses from './pages/expenseRegister/registerExpenses';
 import BankAccounts from './pages/bankAccounts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
