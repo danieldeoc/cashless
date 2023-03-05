@@ -15,8 +15,6 @@ import BankAccounts from './pages/bankAccounts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  
-
   <Router>
         <Navigator />
         <Routes>            
