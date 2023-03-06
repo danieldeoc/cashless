@@ -105,8 +105,9 @@ function CategoriesSettings(){
 
     function addNewCategory(){
         if(newCategoryFather == "Main"){
-            
-            if(categoriesCatalog.indexOf(newCategoryName) != -1 ){
+            const nameCheck = categoriesCatalog.find( ({Name}) => Name == newCategoryName);
+            console.log(nameCheck)
+            if( nameCheck === undefined ){
                 // add a new father category
                 addDoc(colRef, {
                     Name: newCategoryName,
@@ -121,9 +122,7 @@ function CategoriesSettings(){
 
             } else {
                 alert("Name already exists")
-            }
-
-
+            } 
         } else {
             console.log("t", categoriesCatalog)
             categoriesCatalog.map( (key, index) => {
