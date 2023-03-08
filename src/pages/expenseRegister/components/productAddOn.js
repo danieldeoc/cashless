@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { ExpenseContext}  from '../registerExpenses.js';
+import { ExpenseContext}  from '../index.js';
 
 import InputAutoComplete from "../../../components/forms/inputAutocomplet";
 import SelectBox from "../../../components/forms/select";

@@ -20,7 +20,7 @@ const db = getFirestore();
 /* ################################## */
 // Get products amount units
 /* ########################## */
-export async function getProductUnits(){
+export async function getProductUnitsCatalog(){
     let productUnits = [];
     await getDoc(doc(db, "settings", "product_settings"))
         .then( (snap) => {
@@ -31,20 +31,53 @@ export async function getProductUnits(){
     return productUnits;
 }
 
-/* ################################## */
-// Get list of avaliable products
-/* ########################## */
+/* #################################################################### */
+/* #################################################################### */
+/* #################################################################### */
+// Products CRUD
+
+//////////////
+// Return Products Catalog
 export async function getProductCatalog(){
     let productCatalog = [];
     const queryList = query(collection(db, "products_catalog"), orderBy('Name', 'asc')) 
-    await getDocs(queryList).then( (snapshot) => {              
-        snapshot.docs.forEach((doc) => {
-            productCatalog.push({ ...doc.data(), id: doc.id})
+    await getDocs(queryList)
+        .then( (snapshot) => {              
+            snapshot.docs.forEach((doc) => {
+                productCatalog.push({ ...doc.data(), id: doc.id})
+            })
+        }).catch( (err) => {
+            return err;
+        }).finally(() => {
+            if(productCatalog.length == 0){
+                productCatalog.push("No products avaliable")
+            }
         })
-    }).catch( (err) => {
-        console.log("err")
-    });
     return productCatalog;
+}
+
+//////////////
+// Adds a new product to the catalog
+export async function AddProductToCatalog(data){
+    await addDoc(collection(db, "products_catalog") , data)
+        .then((res) => {
+            console.log(res)
+            console.log("New product added")
+        }).catch( err => console.log(err))
+        .finally( () => {
+            console.log("product addicion ended")
+        }) 
+}
+
+//////////////
+// Delets a product from the catalog
+export async function deletProductFromCatalog(id){
+    const docRef = doc(db, "products_catalog", id);
+    await deleteDoc(docRef)
+            .then( (res) => {
+                console.log("deleted");
+                return "deleted";
+            }).catch( (err) => console.log(err))
 }
 
 

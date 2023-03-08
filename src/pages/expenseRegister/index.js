@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
-import { getProductCatalog, getProductUnits,getExpensesCatalog, getAccountsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { getProductCatalog, getProductUnitsCatalog,getExpensesCatalog, getAccountsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
 
 import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
@@ -87,7 +87,7 @@ function RegisterExpenses(){
     // First page render, gets the catalog of avaliable information
     const firstRender = useEffect( () => {
         const fetchData = async () => {
-            const getPU = await getProductUnits();
+            const getPU = await getProductUnitsCatalog();
             const getPC = await getProductCatalog();
             const getCt = await getAccountsCatalog();
             const getCC = await getCategoriesCatalog();
