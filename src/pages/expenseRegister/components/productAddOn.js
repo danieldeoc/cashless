@@ -2,9 +2,10 @@ import React, { useEffect, useState, useContext } from "react";
 import { ExpenseContext}  from '../index.js';
 
 import InputAutoComplete from "../../../components/forms/inputAutocomplet";
-import SelectBox from "../../../components/forms/select";
 import Input from "../../../components/forms/input";
 import {formatValueToMoney, formatValueTo3Digit, productTotalPrice, randomNumber} from "../../../customOperators/mathOperators.js";
+import UnitSelect from "../../../components/forms/UnitSelect/index.js";
+import CategoryFields from "../../../components/forms/CategoryFields/index.js";
 
 ////////////////////////////////
 // Multiple produc expense registration 
@@ -12,15 +13,10 @@ function ProductAddOn(){
 
     /* ################################# */
     // Gets the information catalogs from userContext
-    const { unitsCatalog } = useContext(ExpenseContext);
     const { productsCatalog } = useContext(ExpenseContext);
-    const { accountCatalog } = useContext(ExpenseContext);
-    const { categoriesCatalog } = useContext(ExpenseContext);
-    const { expensesCatalog } = useContext(ExpenseContext);
     const { calcTotalPurchasePrice } = useContext(ExpenseContext)
-
-    const {purchaseProductList, setPurchaseProductList} = useContext(ExpenseContext);
-
+    const { purchaseProductList, setPurchaseProductList} = useContext(ExpenseContext);
+    
     /* ################################# */
     // New Expense Constant
     const [expenseName, setExpenseName] = useState("");
@@ -28,8 +24,8 @@ function ProductAddOn(){
     const [expenseSubCategory, setExpenseSubCategory] = useState("");
     const [expenseAmmount, setExpenseAmmount] = useState("1.000");
     const [expenseAmmountType, setExpenseAmmountType] = useState("");
-    const [expensePrice, setExpensePrice] = useState("0,00");
-    const [expenseTotalPrice, setExpenseTotalPrice] = useState("0,00");
+    const [expensePrice, setExpensePrice] = useState("0.00");
+    const [expenseTotalPrice, setExpenseTotalPrice] = useState("0.00");
     const [tempId, setTempId] = useState(null);
 
     const firstRender = useEffect( () => {
@@ -38,9 +34,6 @@ function ProductAddOn(){
             setTempId(temp)
         }
     }, [])
-
-
-
 
     const newProductRegister = {
         listId: tempId,
@@ -78,23 +71,6 @@ function ProductAddOn(){
     const totalPurchase = useEffect( () => {
         calcTotalPurchasePrice();
     }, [expenseTotalPrice])
-    /* ################################# */
-    // PAGE CONSTANTS
-    const [subCategoriesOptions, setSubCategoriesOptions] = useState(["Wait..."])
-    
-    /* ################################# */
-    // First page Render for update
-    const firstRegister = useEffect( () => {
-        if(expensesCatalog.length > 1){
-            setExpenseCategory( categoriesCatalog[0].Name);
-            setExpenseSubCategory( categoriesCatalog[0].Childs)
-            setExpenseAmmountType( unitsCatalog[0])
-            setSubCategoriesOptions(
-                categoriesCatalog[0].Childs
-            );
-        }
-       
-    }, [expensesCatalog])
 
 
     ///////////////////////
@@ -103,15 +79,25 @@ function ProductAddOn(){
         let expenseFinder = productsCatalog.find( 
             ({Name}) => Name === expenseName);
             if(expenseFinder !== undefined){
-                setExpenseCategory(expenseFinder.category);
-                const subCategories = categoriesCatalog.find( ({Name}) =>  Name == expenseFinder.category)
-                setSubCategoriesOptions(subCategories.Childs)
+                setExpenseCategory(expenseFinder.category);                
                 setExpenseSubCategory(expenseFinder.categoryChild)
             }
         }, [expenseName])
 
     const expenseTotalPriceCalc = () => {
         setExpenseTotalPrice(productTotalPrice(expensePrice, expenseAmmount));
+    }
+
+    function setExpenseDetails(name){
+        const product = productsCatalog.find( ({Name}) => Name == name)
+        if(product !== undefined){
+            console.log("Expense: ", product) 
+            setExpenseName(product.Name);  
+            setExpenseCategory(product.Category)
+            setExpenseSubCategory(product.Subcategory)
+            setExpenseAmmountType(product.AmmountType)
+        }
+
     }
     
     ///////////////////////
@@ -120,30 +106,18 @@ function ProductAddOn(){
         <blockquote>
             <h3>Product</h3>
             <InputAutoComplete 
-                id="productCatalogFilter" 
                 value={expenseName}
                 list={productsCatalog}
                 onChangeHandler={ (key) => { 
-                    setExpenseName(key);                    
+                    setExpenseDetails(key)            
                 }}
                     />
-            <SelectBox 
-                label="Categoria:"
-                value={expenseCategory}
-                options={categoriesCatalog.map( key => key.Name )} 
-                onChangeHandler={ (key) => { 
-                    setExpenseCategory(key);
-                    let subOptions = categoriesCatalog.find(({Name}) => Name === key);
-                    setExpenseSubCategory(subOptions.Childs[0]);
-                    setSubCategoriesOptions(subOptions.Childs);
-                }}/>
-            <SelectBox 
-                label="Sub-categoria"
-                options={ subCategoriesOptions }
-                value={expenseSubCategory}
-                onChangeHandler={ (key) => { 
-                    setExpenseSubCategory(key)
-                }} />
+            
+            <CategoryFields 
+                onChangeHandler={ (category, subCategory) => { 
+                    setExpenseCategory(category)
+                    setExpenseSubCategory(subCategory)
+                    } } />
 
             <Input
                 id="ammount"
@@ -161,12 +135,8 @@ function ProductAddOn(){
                 }}
                 />
 
-            <SelectBox 
-                label="Units"
-                options={unitsCatalog}
-                onChangeHandler={ (key) => { 
-                    setExpenseAmmountType(key)
-                }}  />
+            <UnitSelect
+                onChangeHandler={ (value) => { setExpenseAmmountType(value) } } />
 
             <Input
                 id="price"

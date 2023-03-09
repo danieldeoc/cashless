@@ -41,10 +41,20 @@ function ProductsCatalog(){
             PriceHistory: ["Not avaliable"],
             CreatedAt: serverTimestamp()
         }
-        await AddProductToCatalog(newProduct)
-            .then( (res) => {
-                getTheProductCatalog();
-            }).catch( err => console.error(err) )
+        
+
+        if( newProduct.Name.length > 0){
+
+           await AddProductToCatalog(newProduct)
+                .then( (res) => {
+                    getTheProductCatalog();
+                }).catch( err => console.error(err) ) 
+
+
+        } else {
+            alert("Please, enter a product name")
+        }
+
     }
 
     //////////////////////////////
@@ -78,13 +88,13 @@ function ProductsCatalog(){
                             {key.Name}
                             {key.Category}
                             {key.Subcategory}
+                            {key.AmmountType}
                             {Date(key.CreatedAt)}
                             <i onClick={ async () => { 
                                 await deletProductFromCatalog(key.id)
                                     .then( () => {
                                         getTheProductCatalog()
                                     }) 
-                                
                                 }}>X</i>
                         </li>
                     ))
@@ -92,6 +102,13 @@ function ProductsCatalog(){
             }
         }    
     }, [productsCatalog])
+
+    /////////////////////
+    /// manages the categories and units changes
+    function categoriesChanges(category, subcategory){
+        setNewCategory(category);
+        setNewSubCategory(subcategory)
+    }
 
     return(
         <>
@@ -102,8 +119,10 @@ function ProductsCatalog(){
                         type="text" 
                         ref={productName}  />
                 </label>
-                <CategoryFields />
-                <UnitSelect />
+                <CategoryFields onChangeHandler={(category, subcategory) => categoriesChanges(category, subcategory)} />
+                <UnitSelect onChangeHandler={(unitType) => {
+                    console.log(unitType)
+                    setNewAmmountType(unitType) }} />
                 <button onClick={createNewProduct}>Add</button>
             </div>
             <h2>Products Catalog</h2>

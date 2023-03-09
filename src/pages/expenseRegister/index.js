@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
-import { getProductCatalog, getProductUnitsCatalog,getExpensesCatalog, getAccountsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { Timestamp } from "firebase/firestore"
+import { getProductCatalog, getExpensesCatalog, getAccountsCatalog } from "../../globalOperators/globalGetters";
 
 import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
@@ -40,38 +40,25 @@ export const ExpenseContext = createContext();
 // COMPONENT
 function RegisterExpenses(){  
     
-    // FIREBASE CONFIG
-    const firebaseConfig = {
-        apiKey: "AIzaSyD6txBIF18GfL7EvXyouaADDFqK9rJd6cA",
-        authDomain: "cashless-appdoc.firebaseapp.com",
-        projectId: "cashless-appdoc",
-        storageBucket: "cashless-appdoc.appspot.com",
-        messagingSenderId: "3827619937",
-        appId: "1:3827619937:web:4b0bedbaa556b077897220",
-        measurementId: "G-9Y22LJCR68"
-    };
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getFirestore();
-    const collectionRef = "expenses";
-    const colRef = collection(db, collectionRef);
     
 
     /* ################################# */
     // First, I get the catalog of avaliable information
     const loadingMsg = "Wait...";
-    const [unitsCatalog, setUnitsCatalog] = useState([loadingMsg]);
+    
     const [productsCatalog, setProductsCatalog] = useState([loadingMsg]);
     const [accountCatalog, setAccountsCatalog] = useState([loadingMsg]);
-    const [categoriesCatalog, setCategoriesCatalog] = useState([loadingMsg]);
+    
     const [expensesCatalog, setExpensesCatalog] = useState([loadingMsg]);
+
+    const [multiForm, setMultiForm] = useState("")
   
     
     /* ################################# */
     // REGISTRATION CONSTANTS > then, is setted information to a new expense register
     const [purchaseProductList, setPurchaseProductList] = useState([]);
 
-    const [totalPurchasePrice, setTotalPurchasePrice] = useState("0.00");
+    const [totalPurchasePrice, setTotalPurchasePrice] = useState(null);
 
     const [expenseStore, setExpenseStore] = useState(""); // get the
     const [expenseBankAccount, setExpenseBankAccount] = useState("");
@@ -87,16 +74,17 @@ function RegisterExpenses(){
     // First page render, gets the catalog of avaliable information
     const firstRender = useEffect( () => {
         const fetchData = async () => {
-            const getPU = await getProductUnitsCatalog();
-            const getPC = await getProductCatalog();
-            const getCt = await getAccountsCatalog();
-            const getCC = await getCategoriesCatalog();
+            await getProductCatalog().then(
+                (res) =>{
+                    setProductsCatalog(res);
+                    setMultiForm(<ProductAddOn />)
+                }
+            );
+            const getCt = await getAccountsCatalog();            
             const getEC = await getExpensesCatalog("default")
 
-            setUnitsCatalog(getPU);
-            setProductsCatalog(getPC);
+           
             setAccountsCatalog(getCt);
-            setCategoriesCatalog(getCC);
             setExpensesCatalog(getEC);
         }
         fetchData();
@@ -153,9 +141,8 @@ function RegisterExpenses(){
     }
 
     function showList(){
-        console.log("Purchase changed: ", purchaseProductList) 
+        console.log("Purchase changed show: ", purchaseProductList) 
     }
-
 
     function calcTotalPurchasePrice(){
         if(purchaseProductList.length == 1){
@@ -175,14 +162,15 @@ function RegisterExpenses(){
     /////////////////////////////////
     /* INTERFACE */
     return(
-        <>
         
-        <ExpenseContext.Provider value={ {unitsCatalog, productsCatalog, accountCatalog, categoriesCatalog, expensesCatalog, totalPurchasePrice, setTotalPurchasePrice, purchaseProductList, setPurchaseProductList, calcTotalPurchasePrice } }>
+        
+        <ExpenseContext.Provider value={ {productsCatalog, accountCatalog, expensesCatalog, totalPurchasePrice, setTotalPurchasePrice, purchaseProductList, setPurchaseProductList, calcTotalPurchasePrice } }>
             <button onClick={showList}>LIst</button>
             <h1>New Expense</h1>
             <div className="addNewExpense">
                 <div id="productsBox">
-                    <ProductAddOn />
+                    {multiForm}
+                    
                     {productRegister}
                 </div>
                 <button onClick={addProduct}>Add Product</button>
@@ -225,7 +213,7 @@ function RegisterExpenses(){
                 {listExpenses}
             </ul>
         </ExpenseContext.Provider>
-        </>
+        
     )
 }
 export default RegisterExpenses;

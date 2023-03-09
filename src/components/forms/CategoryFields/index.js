@@ -4,7 +4,7 @@ import {
 } from "../../../globalOperators/globalGetters";
 
 
-function CategoryFields(){
+function CategoryFields(props){
     
     const [categoryCatalog, setCategoryCatalog] = useState(undefined);
     const [categoriesOptions, setCategoriesOptions] = useState("");
@@ -63,13 +63,17 @@ function CategoryFields(){
                                     ))
                                 )
                             }
+                            props.onChangeHandler( selectCategory.current.value, subCats.Childs[0] )
                         }} >
                         {categoriesOptions}
                     </select>
                 </label>
                 <label>Product Sub Category</label>
                 <select 
-                    ref={selectSubCategory} >
+                    ref={selectSubCategory}
+                    onChange={ (e) => {
+                        props.onChangeHandler( selectCategory.current.value, selectSubCategory.current.value )
+                    }} >
                     {subCategoriesOptions}
                 </select>
         </>

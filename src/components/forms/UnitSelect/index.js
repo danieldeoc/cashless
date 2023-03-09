@@ -4,7 +4,7 @@ import {
     getProductUnitsCatalog
 } from "../../../globalOperators/globalGetters";
 
-function UnitSelect(){
+function UnitSelect(props){
     const [unitsCatalog, setUnitsCatalog] = useState(undefined);
     const [unitsOptions, setUnitsOptions] = useState([]);
     const productAmmountType = useRef();
@@ -40,7 +40,11 @@ function UnitSelect(){
     return(
         <label>
             Product Ammount Type:
-            <select ref={productAmmountType} >
+            <select 
+                ref={productAmmountType}
+                onChange={ (e) => {
+                    props.onChangeHandler( productAmmountType.current.value)
+                }} >
                 {unitsOptions}
             </select>
         </label>
