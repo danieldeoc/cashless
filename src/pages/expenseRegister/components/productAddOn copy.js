@@ -20,24 +20,20 @@ function ProductAddOn(){
     /* ################################# */
     // New Expense Constant
     const [tempId, setTempId] = useState(null);
-    const [expenseName, setExpenseName] = useState(undefined);
-    const [expenseCategory, setExpenseCategory] = useState(undefined);
-    const [expenseSubCategory, setExpenseSubCategory] = useState(undefined);
-    const [expenseAmmount, setExpenseAmmount] = useState("1");
-    const [expenseAmmountType, setExpenseAmmountType] = useState(undefined);
+    const [expenseName, setExpenseName] = useState("");
+    const [expenseCategory, setExpenseCategory] = useState("");
+    const [expenseSubCategory, setExpenseSubCategory] = useState("");
+    const [expenseAmmount, setExpenseAmmount] = useState("1.000");
+    const [expenseAmmountType, setExpenseAmmountType] = useState("");
     const [expensePrice, setExpensePrice] = useState("0.00");
     const [expenseTotalPrice, setExpenseTotalPrice] = useState("0.00");
 
-    //////////////////////////////
-    // First render and load of information
     const firstRender = useEffect( () => {
         if(newProductRegister.listId === null){
             let temp = randomNumber(1000000);
             setTempId(temp)
         }
-
-
-    }, [productsCatalog])
+    }, [])
 
     const newProductRegister = {
         listId: tempId,
@@ -121,6 +117,51 @@ function ProductAddOn(){
                 }}
                     />
             
+            <CategoryFields 
+                expenseName={expenseName}
+                onChangeHandler={ (category, subCategory) => { 
+                    setExpenseCategory(category)
+                    setExpenseSubCategory(subCategory)
+                    } } />
+
+            <Input
+                id="ammount"
+                label="Ammount:"
+                type="number"
+                steps="0.001"
+                value={expenseAmmount}
+                onKeyUpHandler={() => {
+                    expenseTotalPriceCalc()
+                }}
+                onChangeHandler={ (key) => { 
+                    const ammountUnit = formatValueTo3Digit(key)
+                    setExpenseAmmount(ammountUnit) 
+                    expenseTotalPriceCalc()
+                }}
+                />
+
+            <UnitSelect
+                onChangeHandler={ (value) => { setExpenseAmmountType(value) } } />
+
+            <Input
+                id="price"
+                label="Price per unit:"
+                value={expensePrice}
+                type="number"
+                steps="0.01"
+                onKeyUpHandler={() => {
+                    expenseTotalPriceCalc()
+                }}
+                onChangeHandler={ (key) => { 
+                    const priceUnit = formatValueToMoney(key)
+                    setExpensePrice(priceUnit)
+                    expenseTotalPriceCalc()
+                }}
+                />
+
+            <span>
+                {expenseTotalPrice}
+            </span>
         </blockquote>
         )   
 }

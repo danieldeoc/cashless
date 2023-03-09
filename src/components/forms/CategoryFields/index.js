@@ -10,9 +10,12 @@ function CategoryFields(props){
     const [categoriesOptions, setCategoriesOptions] = useState("");
     const [subCategoriesOptions, setSubCategoriesOptions] = useState("");
 
+    const [expenseName, setExpenseName] = useState(props.expenseName)
+
     const selectCategory = useRef()
     const selectSubCategory = useRef()
- 
+
+    
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
     // FIRST PAGE LOAD
@@ -43,6 +46,10 @@ function CategoryFields(props){
             setSubCategoriesOptions(categoryCatalog[0].Childs)
         }
     }, [categoryCatalog])
+
+    const nameUpdates = useEffect( () => {
+       console.log("Name updates", expenseName)
+    }, [expenseName])
     
     return(
         <>

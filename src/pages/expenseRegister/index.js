@@ -8,6 +8,7 @@ import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
 import Input from "../../components/forms/input";
 import { formatValueToMoney } from "../../customOperators/mathOperators";
+import AccountSelects from "./components/accountsSelects";
 
 /* 
     in order to register a new expenses it will:
@@ -40,34 +41,34 @@ export const ExpenseContext = createContext();
 // COMPONENT
 function RegisterExpenses(){  
     
-    
-
     /* ################################# */
     // First, I get the catalog of avaliable information
-    const loadingMsg = "Wait...";
-    
-    const [productsCatalog, setProductsCatalog] = useState([loadingMsg]);
-    const [accountCatalog, setAccountsCatalog] = useState([loadingMsg]);
-    
-    const [expensesCatalog, setExpensesCatalog] = useState([loadingMsg]);
-
-    const [multiForm, setMultiForm] = useState("")
-  
+    const [productsCatalog, setProductsCatalog] = useState(undefined);
+    const [accountCatalog, setAccountsCatalog] = useState(undefined);
+    const [expensesCatalog, setExpensesCatalog] = useState(undefined);
     
     /* ################################# */
     // REGISTRATION CONSTANTS > then, is setted information to a new expense register
+    const [expenseStore, setExpenseStore] = useState(undefined); // get the
+    
     const [purchaseProductList, setPurchaseProductList] = useState([]);
-
-    const [totalPurchasePrice, setTotalPurchasePrice] = useState(null);
-
-    const [expenseStore, setExpenseStore] = useState(""); // get the
-    const [expenseBankAccount, setExpenseBankAccount] = useState("");
-    const [expensePayMethod, setExpensePayMethod] = useState("");
-    const [paymentsOptions, setPaymentsOptions] = useState([loadingMsg]);
+    const [expenseBankAccount, setExpenseBankAccount] = useState(undefined);
+    const [expensePayMethod, setExpensePayMethod] = useState(undefined);
+    
+    const [totalPurchasePrice, setTotalPurchasePrice] = useState(undefined);
+    
+    const expenseRegister = {
+        products: purchaseProductList,
+        store: expenseStore,
+        account: expenseBankAccount,
+        paymenMethod: expensePayMethod,
+        totalExpense: totalPurchasePrice
+    }
+    
     
     /* ################################# */
     // PAGE CONSTANTS > then, is setted the interface constants
-    const [listExpenses, setListExpenses] = useState([loadingMsg]); // draw the expense list
+    const [listExpenses, setListExpenses] = useState(["Wait..."]); // draw the expense list
 
 
     /* ################################# */
@@ -77,14 +78,19 @@ function RegisterExpenses(){
             await getProductCatalog().then(
                 (res) =>{
                     setProductsCatalog(res);
-                    setMultiForm(<ProductAddOn />)
                 }
             );
-            const getCt = await getAccountsCatalog();            
+            await getAccountsCatalog().then(
+                (res) => {
+                    setAccountsCatalog(res);
+                }
+            )
+
+
             const getEC = await getExpensesCatalog("default")
 
            
-            setAccountsCatalog(getCt);
+            
             setExpensesCatalog(getEC);
         }
         fetchData();
@@ -97,7 +103,7 @@ function RegisterExpenses(){
     const draw = useEffect( () => {
         
         // draw the list of expenses
-        if(expensesCatalog[0] !== loadingMsg){
+        if(expensesCatalog !== undefined){
             setListExpenses(
                 expensesCatalog.map( key => ( 
                     <li key={key.id}>  
@@ -114,10 +120,7 @@ function RegisterExpenses(){
                 ))
             ); 
 
-            // update the form whit options
-            setPaymentsOptions(accountCatalog[0].PaymentMethods);
-            setExpenseBankAccount(accountCatalog[0].Name);
-            setExpensePayMethod(accountCatalog[0].PaymentMethods[0]);
+            
         }
     }, [expensesCatalog, productRegister])
 
@@ -141,7 +144,7 @@ function RegisterExpenses(){
     }
 
     function showList(){
-        console.log("Purchase changed show: ", purchaseProductList) 
+        console.log("Purchase changed show: ", expenseRegister) 
     }
 
     function calcTotalPurchasePrice(){
@@ -160,27 +163,32 @@ function RegisterExpenses(){
     }
 
     /////////////////////////////////
+    // Global Variables
+    const globalVariables = {
+        productsCatalog, 
+        accountCatalog, 
+        expensesCatalog, 
+
+        expenseBankAccount, setExpenseBankAccount,
+        expensePayMethod, setExpensePayMethod,
+        
+        purchaseProductList, setPurchaseProductList, 
+        totalPurchasePrice, setTotalPurchasePrice, 
+        calcTotalPurchasePrice 
+    } 
+
+    /////////////////////////////////
     /* INTERFACE */
-    return(
-        
-        
-        <ExpenseContext.Provider value={ {productsCatalog, accountCatalog, expensesCatalog, totalPurchasePrice, setTotalPurchasePrice, purchaseProductList, setPurchaseProductList, calcTotalPurchasePrice } }>
+    return(       
+        <ExpenseContext.Provider value={globalVariables}>
             <button onClick={showList}>LIst</button>
             <h1>New Expense</h1>
             <div className="addNewExpense">
                 <div id="productsBox">
-                    {multiForm}
-                    
+                    <ProductAddOn />
                     {productRegister}
                 </div>
                 <button onClick={addProduct}>Add Product</button>
-
-                <ul>
-                    <li>Total {totalPurchasePrice}</li>
-                    <li>Store: {expenseStore} </li>
-                    <li>Bank: {expenseBankAccount}</li>
-                    <li>Payment Method: {expensePayMethod}</li>
-                </ul>
                 
                 <Input
                     id="store"
@@ -191,22 +199,7 @@ function RegisterExpenses(){
                     }}
                     />
 
-                <SelectBox 
-                    label="Account"
-                    options={accountCatalog.map( key => key.Name)}
-                    onChangeHandler={ (key) => { 
-                        let accountDetails = accountCatalog.find( ({Name}) => Name == key )
-                        setExpensePayMethod(accountDetails.PaymentMethods[0])
-                        setExpenseBankAccount(key)
-                    }}  />  
-
-                <SelectBox 
-                    label="Payment Method: "
-                    options={paymentsOptions}
-                    value={expensePayMethod}
-                    onChangeHandler={ (key) => { 
-                        setExpensePayMethod(key)
-                    }}  />   
+                <AccountSelects />
             </div>
             <h2>List of Expenses</h2>
             <ul>
