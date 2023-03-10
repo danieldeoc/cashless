@@ -14,16 +14,14 @@ function Input(props){
             <input
                 id={props.id}
                 placeholder={props.placeholder}
-                value={inputValue}
+                defaultValue={inputValue}
                 type={props.type}
                 step={props.steps}
                 onChange={ (e) => { 
                     setInputValue(e.target.value);
                     props.onChangeHandler(e.target.value)
                 }}
-                onKeyUp={ (e) => {
-                    props.onKeyUpHandler(e.target.value)
-                }}
+                
                 />
         </label>
     )

@@ -31,9 +31,9 @@ function InputAutoComplete(props){
     ///////////////////////////////
     // catalog loaded
     const catalogLoaded = useEffect( () => {
-        if( productsCatalog !== undefined){
+        if( productsCatalog !== undefined && inputId !== undefined){
             setProductCatalogList(
-                props.list.map( (key, i) => (      
+                productsCatalog.map( (key, i) => (      
                     <li 
                         key={inputId+"_"+key.id} 
                         className={`li_${inputId}`}
@@ -48,7 +48,7 @@ function InputAutoComplete(props){
                 ))
             )
         }        
-    }, [productsCatalog]);
+    }, [productsCatalog, inputId]);
     
     //////////////////////////
     // Filter the sugestion list

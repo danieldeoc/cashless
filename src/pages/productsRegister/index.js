@@ -4,17 +4,20 @@ import {
     getProductCatalog, 
     getProductUnitsCatalog, 
     AddProductToCatalog, 
+    getCategoriesCatalog,
     deletProductFromCatalog  
 } from "../../globalOperators/globalGetters";
 
 import { serverTimestamp } from "firebase/firestore";
 import CategoryFields from "../../components/forms/CategoryFields/index";
-import UnitSelect from "../../components/forms/UnitSelect/index";
+import UnitSelect from "../../components/forms/UnitSelect/index.js";
 
 function ProductsCatalog(){   
     //////////////////////////////
     // Get General Information
     const [productsCatalog, setProductsCatalog] = useState(undefined);   
+    const [ unitsCatalog, setUnitsCatalog] = useState(undefined);
+    const [ categoryCatalog, setCategoryCatalog] = useState(undefined)
     
     //////////////////////////////
     // Set new product information    
@@ -47,7 +50,7 @@ function ProductsCatalog(){
 
            await AddProductToCatalog(newProduct)
                 .then( (res) => {
-                    getTheProductCatalog();
+                    getCatalogs();
                 }).catch( err => console.error(err) ) 
 
 
@@ -59,12 +62,21 @@ function ProductsCatalog(){
 
     //////////////////////////////
     // get and creates the units options
-    async function getTheProductCatalog(){
-        const avaliableProducts = await getProductCatalog()
+    async function getCatalogs(){
+            await getProductCatalog()
                 .then((res) => {
                     setProductsCatalog(res);
                 }).catch( err => console.error(err) )
-    }
+            await getProductUnitsCatalog()
+                .then(
+                    res => setUnitsCatalog(res)
+                ) 
+            await getCategoriesCatalog()
+                .then(
+                    res => setCategoryCatalog(res)
+                )
+        }
+    
         
 
     ////////////////////////////////////////////////
@@ -73,7 +85,7 @@ function ProductsCatalog(){
     ////////////////////////////////////////////////
     const firstLoad =  useEffect( () => {
         // GET AVALIABLE DATA
-        getTheProductCatalog()
+        getCatalogs()
     }, [])
 
     const pageUpdates = useEffect( () => {
@@ -93,7 +105,7 @@ function ProductsCatalog(){
                             <i onClick={ async () => { 
                                 await deletProductFromCatalog(key.id)
                                     .then( () => {
-                                        getTheProductCatalog()
+                                        getCatalogs()
                                     }) 
                                 }}>X</i>
                         </li>

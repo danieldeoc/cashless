@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { Timestamp } from "firebase/firestore"
-import { getProductCatalog, getExpensesCatalog, getAccountsCatalog } from "../../globalOperators/globalGetters";
+import { getProductCatalog, getExpensesCatalog, getAccountsCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
 
 import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
@@ -32,10 +32,7 @@ import AccountSelects from "./components/accountsSelects";
         c) update bank current value
 
 */
-
-
 export const ExpenseContext = createContext();
-
 
 ////////////////////////////////
 // COMPONENT
@@ -46,17 +43,18 @@ function RegisterExpenses(){
     const [productsCatalog, setProductsCatalog] = useState(undefined);
     const [accountCatalog, setAccountsCatalog] = useState(undefined);
     const [expensesCatalog, setExpensesCatalog] = useState(undefined);
+    const [unitsCatalog, setUnitsCatalog] = useState(undefined);
+    const [categoryCatalog, setCategoryCatalog] = useState(undefined);
     
     /* ################################# */
     // REGISTRATION CONSTANTS > then, is setted information to a new expense register
-    const [expenseStore, setExpenseStore] = useState(undefined); // get the
-    
     const [purchaseProductList, setPurchaseProductList] = useState([]);
+    const [expenseStore, setExpenseStore] = useState(undefined); 
     const [expenseBankAccount, setExpenseBankAccount] = useState(undefined);
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
+    const [totalPurchasePrice, setTotalPurchasePrice] = useState(formatValueToMoney("0.00"));
     
-    const [totalPurchasePrice, setTotalPurchasePrice] = useState(undefined);
-    
+    // expense register object
     const expenseRegister = {
         products: purchaseProductList,
         store: expenseStore,
@@ -65,38 +63,34 @@ function RegisterExpenses(){
         totalExpense: totalPurchasePrice
     }
     
-    
     /* ################################# */
     // PAGE CONSTANTS > then, is setted the interface constants
     const [listExpenses, setListExpenses] = useState(["Wait..."]); // draw the expense list
-
+    const [productMultipleRegister, setProducMultipleRegister] = useState([]) // allows to draw the multiple register
 
     /* ################################# */
     // First page render, gets the catalog of avaliable information
     const firstRender = useEffect( () => {
         const fetchData = async () => {
             await getProductCatalog().then(
-                (res) =>{
-                    setProductsCatalog(res);
-                }
+                res => setProductsCatalog(res)
             );
             await getAccountsCatalog().then(
-                (res) => {
-                    setAccountsCatalog(res);
-                }
+                res => setAccountsCatalog(res)
             )
-
-
-            const getEC = await getExpensesCatalog("default")
-
-           
-            
-            setExpensesCatalog(getEC);
+            await getProductUnitsCatalog().then(
+                res => setUnitsCatalog(res)
+            );   
+            await getCategoriesCatalog().then(
+                res => setCategoryCatalog(res)
+            )
+            await getExpensesCatalog("default").then(
+                res => setExpensesCatalog(res)
+            )
         }
         fetchData();
     }, []);
 
-    const [productRegister, setProducRegister] = useState([])
 
     /////////////////////////
     // Once with data, it populates and updates the interface on data change
@@ -119,47 +113,56 @@ function RegisterExpenses(){
                     </li>
                 ))
             ); 
-
-            
         }
-    }, [expensesCatalog, productRegister])
+    }, [expensesCatalog])
 
-    //////////////////////////////////////
-    // updates product list and final calcs
-    const totalsAndProducList = useEffect(() => {
-        console.log("Purchase changed: ", purchaseProductList)
-    }, [purchaseProductList])
     
     
     //////////////////////////////
     // Add a new product to the page
     function addProduct(){
-        const newRegister = productRegister;
+        const newRegister = productMultipleRegister;
         newRegister.push(<ProductAddOn />)
-        setProducRegister(
+        setProducMultipleRegister(
             newRegister.map( key => (
                 key
             ))
         );
     }
 
+    ///////////////////////////
+    /// expense register show
     function showList(){
         console.log("Purchase changed show: ", expenseRegister) 
     }
 
+
     function calcTotalPurchasePrice(){
-        if(purchaseProductList.length == 1){
-            let newTotalPurchase = purchaseProductList[0].PriceHistory[0].Price;
-            setTotalPurchasePrice(newTotalPurchase)
-        } else {
-            var newTotalPurchase = 0;
-            purchaseProductList.map( (key) => {
-                let value = key.PriceHistory[0].Price;
-                let newValue = value.split("€")
-                newTotalPurchase = parseFloat(newTotalPurchase) + parseFloat(newValue[1]);
-                setTotalPurchasePrice( formatValueToMoney(newTotalPurchase) )
+        let totalPurchase = 0
+        if(expenseRegister.products.length > 0){
+            expenseRegister.products.forEach( (product) => {
+                let totalPrice = product.PriceHistory[0].TotalPrice;
+                if(totalPrice.includes("€")){
+                    let calc = totalPrice.split("€");
+                    let toCalc = parseFloat(calc[1])
+                    totalPurchase = totalPurchase + toCalc;
+                }
             })
         }
+        setTotalPurchasePrice(formatValueToMoney(totalPurchase))
+    }
+
+    /////////////////////////////////
+    // Register Expense
+    function registerExpense(){
+        alert("time to register the expense")
+
+        console.log("Add nonexistent products to the catalog / also fix the catalog page")
+        console.log("Add price history to existent products in the catalog")
+        console.log("add expense register to the expenses history")
+        console.log("add movment to the bank account")
+        console.log("update the screen")
+
     }
 
     /////////////////////////////////
@@ -168,9 +171,12 @@ function RegisterExpenses(){
         productsCatalog, 
         accountCatalog, 
         expensesCatalog, 
+        unitsCatalog,
+        categoryCatalog,
 
         expenseBankAccount, setExpenseBankAccount,
         expensePayMethod, setExpensePayMethod,
+        expenseStore, setExpenseStore,
         
         purchaseProductList, setPurchaseProductList, 
         totalPurchasePrice, setTotalPurchasePrice, 
@@ -186,7 +192,7 @@ function RegisterExpenses(){
             <div className="addNewExpense">
                 <div id="productsBox">
                     <ProductAddOn />
-                    {productRegister}
+                    {productMultipleRegister}
                 </div>
                 <button onClick={addProduct}>Add Product</button>
                 
@@ -194,12 +200,21 @@ function RegisterExpenses(){
                     id="store"
                     label="Store:"
                     value={expenseStore}
-                    onChangeHandler={ (key) => { 
-                        setExpenseStore(key)
+                    onChangeHandler={ (storeName) => { 
+                        setExpenseStore(storeName);
+                       /* expenseRegister.products.forEach( (key) => {
+                            console.log(key.PriceHistory[0].Store = storeName)
+                        }) */
                     }}
                     />
 
                 <AccountSelects />
+
+                <div>
+                    Total purchase: {totalPurchasePrice}
+                </div>
+
+                <button onClick={registerExpense}>Register Expense</button>
             </div>
             <h2>List of Expenses</h2>
             <ul>

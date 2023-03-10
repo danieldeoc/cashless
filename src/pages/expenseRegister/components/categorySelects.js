@@ -7,7 +7,8 @@ import { ProductContext } from "../../../pages/expenseRegister/components/produc
 
 
 function CategoryFields(props){
-    const catalog = props.catalog;
+    const { categoryCatalog } = useContext(ExpenseContext)
+    const { selectedProduct } = useContext(ProductContext)
 
     const [selectedCategory, setSelectedCategory] = useState(undefined)
     const [selectedSubcategory, setSelectedSubcategory] = useState(undefined)
@@ -31,11 +32,11 @@ function CategoryFields(props){
     }
 
     const pageUpdates = useEffect( () => {
-        if(catalog !== undefined){
-            setSelectedCategory( catalog[0].Name)
-            setSelectedSubcategory(catalog[0].Childs)
+        if(categoryCatalog !== undefined){
+            setSelectedCategory( categoryCatalog[0].Name)
+            setSelectedSubcategory(categoryCatalog[0].Childs)
             setCategoriesOptions(
-                catalog.map( (key, i) => (
+                categoryCatalog.map( (key, i) => (
                     <option key={i}>{key.Name}</option>
                 ))
             );
@@ -63,9 +64,8 @@ function CategoryFields(props){
                         value={selectedCategory}
                         onChange={ (e) => {
                             const value = selectCategory.current.value;
-                            const subCats = catalog.find( ({Name}) => Name == value);
+                            const subCats = categoryCatalog.find( ({Name}) => Name == value);
                             if( typeof subCats.Childs === 'string'){
-                                console.log("empty")
                                 setSubCategoriesOptions("")
                             } else {
                                 drawSubCategoryOptions(subCats.Childs)
