@@ -3,7 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { 
     getProductCatalog, 
     getProductUnitsCatalog, 
-    AddProductToCatalog, 
+     
     getCategoriesCatalog,
     deletProductFromCatalog  
 } from "../../globalOperators/globalGetters";
@@ -48,10 +48,10 @@ function ProductsCatalog(){
 
         if( newProduct.Name.length > 0){
 
-           await AddProductToCatalog(newProduct)
+           /* await AddProductToCatalog(newProduct)
                 .then( (res) => {
                     getCatalogs();
-                }).catch( err => console.error(err) ) 
+                }).catch( err => console.error(err) )  */
 
 
         } else {

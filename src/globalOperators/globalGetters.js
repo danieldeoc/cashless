@@ -56,18 +56,6 @@ export async function getProductCatalog(){
     return productCatalog;
 }
 
-//////////////
-// Adds a new product to the catalog
-export async function AddProductToCatalog(data){
-    await addDoc(collection(db, "products_catalog") , data)
-        .then((res) => {
-            console.log(res)
-            console.log("New product added")
-        }).catch( err => console.log(err))
-        .finally( () => {
-            console.log("product addicion ended")
-        }) 
-}
 
 //////////////
 // Delets a product from the catalog
@@ -118,22 +106,3 @@ export async function getCategoriesCatalog(){
 }
 
 
-/* ################################## */
-// Get Expenses Catalog
-// Options: Query options, 
-/* ########################## */
-export async function getExpensesCatalog(queryOptions){
-    const expensesCatalog = [];
-    if(queryOptions === undefined || queryOptions === "default"){
-        var queryKey = query(collection(db, "expenses"), orderBy('Name', 'asc')) 
-    } else {
-        var queryKey = queryOptions;
-    }
-    await getDocs(queryKey)
-        .then( (snapshot) => {
-            snapshot.docs.forEach( (doc) => {
-                expensesCatalog.push( {...doc.data(), id: doc.id} )
-            })
-        });
-    return expensesCatalog;
-}

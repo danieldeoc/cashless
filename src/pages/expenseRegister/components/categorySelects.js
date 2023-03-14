@@ -1,7 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { 
-    getCategoriesCatalog
-} from "../../../globalOperators/globalGetters";
 import { ExpenseContext } from "../../../pages/expenseRegister";
 import { ProductContext } from "../../../pages/expenseRegister/components/productAddOn";
 
@@ -10,8 +7,8 @@ function CategoryFields(props){
     const { categoryCatalog } = useContext(ExpenseContext)
     const { selectedProduct } = useContext(ProductContext)
 
-    const [selectedCategory, setSelectedCategory] = useState(undefined)
-    const [selectedSubcategory, setSelectedSubcategory] = useState(undefined)
+    const [selectedCategory, setSelectedCategory] = useState("Caridade")
+    const [selectedSubcategory, setSelectedSubcategory] = useState("")
 
     const [categoriesOptions, setCategoriesOptions] = useState("");
     const [subCategoriesOptions, setSubCategoriesOptions] = useState("");
@@ -19,18 +16,8 @@ function CategoryFields(props){
     const selectCategory = useRef()
     const selectSubCategory = useRef()
 
-    ////////////////////////////////////////////////
-    ////////////////////////////////////////////////
-    // Page Updates
-    ////////////////////////////////////////////////
-    function drawSubCategoryOptions(catalog){
-        setSubCategoriesOptions(
-            catalog.map( (key, i) => (
-                <option key={i}>{key}</option>
-            ))
-        )
-    }
-
+    ////////////////
+    // set Initial Values
     const pageUpdates = useEffect( () => {
         if(categoryCatalog !== undefined){
             setSelectedCategory( categoryCatalog[0].Name)
@@ -40,17 +27,36 @@ function CategoryFields(props){
                     <option key={i}>{key.Name}</option>
                 ))
             );
-            setSubCategoriesOptions(categoryCatalog[0].Childs)
+            setSubCategoriesOptions(categoryCatalog[0].Childs, categoryCatalog[0].Childs[0])
         }
     }, [categoryCatalog])
 
+
+    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+    // Page Updates
+    ////////////////////////////////////////////////
+    function drawSubCategoryOptions(catalog, subcategory){
+        setSubCategoriesOptions(
+            catalog.map( (key, i) => (
+                <option key={i}>{key}</option>
+            ))
+        )
+        setTimeout( () => {
+            selectSubCategory.current.value = subcategory;
+        }, 100)
+    }
+
+ 
     const nameUpdates = useEffect( () => {
         if(selectedProduct !== undefined){
+            console.log("prod", selectedProduct)
+            let newSubOptions = categoryCatalog.find( ({Name}) => Name == selectedProduct.Category)
+            
+            selectCategory.current.value = newSubOptions.Name;
             setSelectedCategory( selectedProduct.Category)
             setSelectedSubcategory(selectedProduct.Subcategory)
-
-            let newSubOptions = categoryCatalog.find( ({Name}) => Name == selectedProduct.Category)
-            drawSubCategoryOptions(newSubOptions.Childs)
+            drawSubCategoryOptions(newSubOptions.Childs, selectedProduct.Subcategory)
        }
 
     }, [selectedProduct])
@@ -61,7 +67,7 @@ function CategoryFields(props){
                     Product Category:
                     <select 
                         ref={selectCategory}
-                        value={selectedCategory}
+                        defaultValue={selectedCategory}
                         onChange={ (e) => {
                             const value = selectCategory.current.value;
                             const subCats = categoryCatalog.find( ({Name}) => Name == value);
@@ -78,7 +84,7 @@ function CategoryFields(props){
                 <label>Product Sub Category</label>
                 <select 
                     ref={selectSubCategory}
-                    value={selectedSubcategory}
+                    defaultValue={selectedSubcategory}
                     onChange={ (e) => {
                         props.onChangeHandler( selectCategory.current.value, selectSubCategory.current.value )
                     }} >

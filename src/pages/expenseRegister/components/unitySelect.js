@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
-import { 
-    getProductUnitsCatalog
-} from "../../../globalOperators/globalGetters";
 import { ExpenseContext } from "..";
 
 function UnitSelect(props){

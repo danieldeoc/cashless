@@ -2,13 +2,16 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { Timestamp } from "firebase/firestore"
-import { getProductCatalog, getExpensesCatalog, getAccountsCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { getProductCatalog, getAccountsCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
 
 import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
 import Input from "../../components/forms/input";
-import { formatValueToMoney } from "../../customOperators/mathOperators";
+import { currencySymbol, formatValueToMoney } from "../../customOperators/mathOperators";
 import AccountSelects from "./components/accountsSelects";
+import { expenseRegisterProcess } from "./tools/expenseRegister";
+
+import { getExpensesCatalog } from "../../firebase/expenseRegistration";
 
 /* 
     in order to register a new expenses it will:
@@ -51,14 +54,18 @@ function RegisterExpenses(){
     const [purchaseProductList, setPurchaseProductList] = useState([]);
     const [expenseStore, setExpenseStore] = useState(undefined); 
     const [expenseBankAccount, setExpenseBankAccount] = useState(undefined);
+    const [expenseBankCurrency, setExpenseBankCurrency] = useState(undefined)
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
     const [totalPurchasePrice, setTotalPurchasePrice] = useState(formatValueToMoney("0.00"));
+
+    const [generalId, setGeneralId] = useState(1)
     
     // expense register object
     const expenseRegister = {
         products: purchaseProductList,
         store: expenseStore,
         account: expenseBankAccount,
+        currency: expenseBankCurrency,
         paymenMethod: expensePayMethod,
         totalExpense: totalPurchasePrice
     }
@@ -76,7 +83,10 @@ function RegisterExpenses(){
                 res => setProductsCatalog(res)
             );
             await getAccountsCatalog().then(
-                res => setAccountsCatalog(res)
+                (res) => {
+                    setAccountsCatalog(res)
+                    setExpenseBankCurrency( currencySymbol("Euro") )
+                }
             )
             await getProductUnitsCatalog().then(
                 res => setUnitsCatalog(res)
@@ -95,20 +105,17 @@ function RegisterExpenses(){
     /////////////////////////
     // Once with data, it populates and updates the interface on data change
     const draw = useEffect( () => {
-        
         // draw the list of expenses
+        console.log(expensesCatalog)
         if(expensesCatalog !== undefined){
             setListExpenses(
                 expensesCatalog.map( key => ( 
                     <li key={key.id}>  
-                        {key.Name} 
-                        {key.Category}
-                        {key.SubCategories}
-                        {key.Price}
-                        {key.Ammount}
-                        {key.AmmountType}
-                        {key.Account}
-                        {key.PaymentMethod}
+                        {key.products} 
+                        {key.store}
+                        {expenseBankCurrency}{key.totalExpense}
+                        {key.account}
+                        {key.paymentMethod}
                         {Date(key.CreatedAt)}
                     </li>
                 ))
@@ -121,8 +128,9 @@ function RegisterExpenses(){
     //////////////////////////////
     // Add a new product to the page
     function addProduct(){
+        setGeneralId( generalId + 1)
         const newRegister = productMultipleRegister;
-        newRegister.push(<ProductAddOn />)
+        newRegister.push(<ProductAddOn  generalId={generalId + 1} />)
         setProducMultipleRegister(
             newRegister.map( key => (
                 key
@@ -133,37 +141,32 @@ function RegisterExpenses(){
     ///////////////////////////
     /// expense register show
     function showList(){
-        console.log("Purchase changed show: ", expenseRegister) 
+        console.log("Expenses: ", expenseRegister) 
+        console.log("Catalog: ", productsCatalog) 
     }
 
-
+    //////////////////////
+    // set total expense cost
     function calcTotalPurchasePrice(){
-        let totalPurchase = 0
-        if(expenseRegister.products.length > 0){
-            expenseRegister.products.forEach( (product) => {
-                let totalPrice = product.PriceHistory[0].TotalPrice;
-                if(totalPrice.includes("€")){
-                    let calc = totalPrice.split("€");
-                    let toCalc = parseFloat(calc[1])
-                    totalPurchase = totalPurchase + toCalc;
-                }
-            })
-        }
-        setTotalPurchasePrice(formatValueToMoney(totalPurchase))
+        let totalPurchase = 0;
+        expenseRegister.products.forEach( key => {
+            totalPurchase = totalPurchase + key.TotalPrice;
+        })
+        setTotalPurchasePrice(totalPurchase); 
     }
 
     /////////////////////////////////
     // Register Expense
     function registerExpense(){
-        alert("time to register the expense")
+        expenseRegister.products.forEach( key => {
+            if(key.Store === undefined ){
+                key.Store = expenseStore
+            }
+        })
 
-        console.log("Add nonexistent products to the catalog / also fix the catalog page")
-        console.log("Add price history to existent products in the catalog")
-        console.log("add expense register to the expenses history")
-        console.log("add movment to the bank account")
-        console.log("update the screen")
+        expenseRegisterProcess(expenseRegister, productsCatalog)
+    };
 
-    }
 
     /////////////////////////////////
     // Global Variables
@@ -177,6 +180,7 @@ function RegisterExpenses(){
         expenseBankAccount, setExpenseBankAccount,
         expensePayMethod, setExpensePayMethod,
         expenseStore, setExpenseStore,
+        expenseBankCurrency,
         
         purchaseProductList, setPurchaseProductList, 
         totalPurchasePrice, setTotalPurchasePrice, 
@@ -191,7 +195,7 @@ function RegisterExpenses(){
             <h1>New Expense</h1>
             <div className="addNewExpense">
                 <div id="productsBox">
-                    <ProductAddOn />
+                    <ProductAddOn generalId={"1"} />
                     {productMultipleRegister}
                 </div>
                 <button onClick={addProduct}>Add Product</button>
@@ -202,16 +206,13 @@ function RegisterExpenses(){
                     value={expenseStore}
                     onChangeHandler={ (storeName) => { 
                         setExpenseStore(storeName);
-                       /* expenseRegister.products.forEach( (key) => {
-                            console.log(key.PriceHistory[0].Store = storeName)
-                        }) */
                     }}
                     />
 
                 <AccountSelects />
 
                 <div>
-                    Total purchase: {totalPurchasePrice}
+                    Total purchase:  {totalPurchasePrice} {expenseBankCurrency}
                 </div>
 
                 <button onClick={registerExpense}>Register Expense</button>
