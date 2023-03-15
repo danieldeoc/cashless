@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+////////////////////////////////////////////////////////
+/// STYLES
+$bg: #f2f2f2;
+$white: #fafafa;
+
+// space
+$xs: 4px;
+$sm: 8px;
+$md: 16px;
+$lg: 24px;
+$xl: 32px;
+$xxl: 40px;
+
+// border radius
+$border-radius: $md;
+
+// shadow
+$box-shadow: 0 4px 8px 2px rgba(0,0,0,0.05);
+
+/* ######################### */
+/* AUTOCOMPLETE */
+.autoCompleteList li{ display: none;}
+.autoCompleteList li.show{ display: block;}
+
+
+
+////////////////////////////////////////////////////////
+/// PAGE STYLES
+/// 
+html, body {
+  background-color: $bg;
+}
+body{ padding-bottom: $lg;}
+
+* { font-family: 'Lato', Helvetica, Arial, 'Roboto', sans-serif; }
+
+////////////////////////////////////////////////////////
+/// PAGE STYLES
+.page-box{
+  padding: $md $lg;
+  background: $white;
+  border-radius: $border-radius;
+  max-width: 600px;
+  margin: $md auto 0;
+  box-shadow: $box-shadow;
+  box-sizing: border-box;
+}
+
+
+////////////////////////////////////////////////////////
+/// PAGE TEXTS
+.page-title{
+  margin: 0 0 $lg;
+  font-size: 2rem;
+  color: #333;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: $sm;
+}
+.page-title span {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 60px;
+  height: 2px;
+  border-radius: 8px;
+  background-color: orange;
+}

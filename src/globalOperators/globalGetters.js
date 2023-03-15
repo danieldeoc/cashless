@@ -70,20 +70,5 @@ export async function deletProductFromCatalog(id){
 
 
 
-/* ################################## */
-// Get Categories Catalog
-/* ########################## */
-export async function getCategoriesCatalog(){
-    const categories = []; 
-    const queryList = query(collection(db, "categories"), orderBy('Name', 'asc')) 
-    await getDocs(queryList).then( (snapshot) => {              
-        snapshot.docs.forEach((doc) => {
-            categories.push({ ...doc.data(), id: doc.id})
-        })
-    }).catch( (err) => {
-        console.log("err")
-    });
-    return categories;
-}
 
 

@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { Timestamp } from "firebase/firestore"
-import { getProductCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { getProductCatalog, getProductUnitsCatalog } from "../../globalOperators/globalGetters";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
 import ProductAddOn from "./components/productAddOn";
@@ -11,6 +11,7 @@ import Input from "../../components/forms/input";
 import { currencySymbol, formatValueToMoney } from "../../customOperators/mathOperators";
 import AccountSelects from "./components/accountsSelects";
 import { expenseRegisterProcess } from "./tools/expenseRegister";
+import { getCategoriesCatalog } from "../../firebase/categories";
 
 import { getExpensesCatalog } from "../../firebase/expenseRegistration";
 

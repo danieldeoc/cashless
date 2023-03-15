@@ -4,13 +4,15 @@ import {
     getProductCatalog, 
     getProductUnitsCatalog, 
      
-    getCategoriesCatalog,
+    
     deletProductFromCatalog  
 } from "../../globalOperators/globalGetters";
 
 import { serverTimestamp } from "firebase/firestore";
 import CategoryFields from "../../components/forms/CategoryFields/index";
 import UnitSelect from "../../components/forms/UnitSelect/index.js";
+
+import { getCategoriesCatalog } from "../../firebase/categories";
 
 function ProductsCatalog(){   
     //////////////////////////////

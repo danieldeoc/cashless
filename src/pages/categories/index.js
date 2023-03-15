@@ -2,86 +2,51 @@ import React, { useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { addNewCategory, addNewSubCategory, deletCategorie, deleteSubCateory, getCategoriesCatalog } from "../../firebase/categories";
+import PageBox from "../../components/elements/pageBox";
+import PageTitle from "../../components/elements/texts/pageTitle";
 
 function CategoriesSettings(){
+    ///////////////////////
+    // Catalogs
+    const [categoriesCatalog, setCategoriesCatalog] = useState(undefined)
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyD6txBIF18GfL7EvXyouaADDFqK9rJd6cA",
-        authDomain: "cashless-appdoc.firebaseapp.com",
-        projectId: "cashless-appdoc",
-        storageBucket: "cashless-appdoc.appspot.com",
-        messagingSenderId: "3827619937",
-        appId: "1:3827619937:web:4b0bedbaa556b077897220",
-        measurementId: "G-9Y22LJCR68"
-    };
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getFirestore();
-    const collectionRef = "categories";
-    const colRef = collection(db, collectionRef);
+    ///////////////////////
+    // Data 
+    const [newCategoryName, setNewCategoryName] = useState(undefined);
+    const [mainCategory, setMainCategory] = useState("Main");
 
-    const [listOfCategories, setListOfCategories] = useState("Wait...")
-    const [categoriesCatalog, setCategoriesCatalog] = useState([])
-    
-    const [newCategoryName, setNewCategoryName] = useState("");
-    const [newCategoryFather, setNewCategoryFather] = useState("Main");
-    
-    const [fathersOptions, setFathersOptions] = useState([])
-
-    function delLook(id){
-        const docRef = doc(db, collectionRef, id);
-            deleteDoc(docRef)
-                .then( () => {
-                    console.log("deleted");
-                    listCategories()
-                }).catch( (err) => console.log(err))
+    const newCategory = {
+        Name: newCategoryName,
+        Childs: [],
+        CreatedAt: serverTimestamp()
     }
 
-    function deleteSubCateory(father, subcategory){
-
-        categoriesCatalog.map( (key, index) => {
-            if(key.Name === father){
-                let newChilds = key.Childs;
-                console.log(newChilds)
-                let indexer = newChilds.indexOf(subcategory)
-                if( indexer > -1){
-                    newChilds.splice(indexer, 1)
-                }
-                console.log(newChilds)
+    ///////////////////////
+    // page 
+    const [listOfCategories, setListOfCategories] = useState("Wait...");
+    const [fatherCategoryOptions, setFatherCategoryOptions] = useState([])
 
 
-                const upDocRef = doc(db, collectionRef, key.id)
-                updateDoc(upDocRef, {
-                    Childs: newChilds
-                }).then(() => {
-                    // do something
-                    console.log("updated")
-                    listCategories();
-                }) 
-            } 
-        });
-
-    }
+    ///////////////////////
+    // functions
     
-    // get all categories from server
-    function listCategories(){
-        let categories = [];
-        // get docs
-        const queryList = query(colRef, orderBy('Name', 'asc')) 
-        getDocs(queryList).then( (snapshot) => {
-            
-            snapshot.docs.forEach((doc) => {
-                categories.push({ ...doc.data(), id: doc.id})
-            })
-            setCategoriesCatalog(categories)
+    // update categories page
+    function updatePageList(){
+        if(categoriesCatalog){
+
             setListOfCategories( 
-                categories.map((key, i) => (
+                categoriesCatalog.map((key, i) => (
                     <li key={i}>
-                        {key.Name} <i onClick={ () => { delLook(key.id) } }>X</i>
+                        {key.Name} <i onClick={ () => { 
+                            deletCategorie(key.id).then(performPageDraw);
+                             } }>X</i>
                         {key.Childs.length > 0 &&
                             <ul>
                                 {key.Childs.map((subKey, i) => (
-                                    <li key={i}>{subKey} <i onClick={() => { deleteSubCateory(key.Name, subKey) }}>X</i></li>
+                                    <li key={i}>{subKey} <i onClick={() => { 
+                                        deleteSubCateory(key.id, subKey, categoriesCatalog).then(performPageDraw)
+                                     }}>X</i></li>
                                 ))}
                             </ul>
                         }
@@ -89,95 +54,68 @@ function CategoriesSettings(){
                 ))
             );
     
-            setFathersOptions(
-                categories.map((key, i) => (
+            setFatherCategoryOptions(
+                categoriesCatalog.map((key, i) => (
                     <option key={i}>
                         {key.Name}
                     </option>
                 ))
             )
-        }).catch( (err) => {
-            console.log("err")
-            setListOfCategories("Failed to obtain the categories list")
-        });
-
-    };
-
-    function addNewCategory(){
-        if(newCategoryFather == "Main"){
-            const nameCheck = categoriesCatalog.find( ({Name}) => Name == newCategoryName);
-            console.log(nameCheck)
-            if( nameCheck === undefined ){
-                // add a new father category
-                addDoc(colRef, {
-                    Name: newCategoryName,
-                    Childs: "",
-                    CreatedAt: serverTimestamp()
-                }).then(() => {
-                    setNewCategoryName("")
-                    setNewCategoryFather("Main")
-                    listCategories();    
-                    console.log("New Category Created")
-                }).catch( err => console.log(err))
-
-            } else {
-                alert("Name already exists")
-            } 
-        } else {
-            console.log("t", categoriesCatalog)
-            categoriesCatalog.map( (key, index) => {
-                if(key.Name === newCategoryFather){
-                    
-                    if(typeof key.Childs === "string"){
-                        var newChilds = []
-                    } else {
-                        var newChilds = key.Childs;
-                    }
-                    console.log(newChilds)
-                    newChilds.push(newCategoryName)
-                    //console.log("update: ", key, key.id)
-                    const upDocRef = doc(db, 'categories', key.id)
-                    updateDoc(upDocRef, {
-                        Childs: newChilds
-                    }).then(() => {
-                        // do something
-                        console.log("updated")
-                        listCategories();
-                    }) 
-                }
-            });
         }
     }
     
-    // only one render
-    useEffect(() => {
-        listCategories();    
+    ////////////////////
+    // Page loads
+    function performPageDraw(){
+        getCategoriesCatalog().then( (catalog) => {
+            setCategoriesCatalog(catalog);
+            updatePageList()
+        });
+    }
+    const getCatalogs = useEffect( () => {
+        performPageDraw();
     }, []);
 
-
-
+    const updatePage = useEffect( () => {
+        updatePageList();
+    }, [categoriesCatalog])
 
     return(
-        <>
+        <PageBox>
+            <PageTitle text="Categories" />
             <h2>Add Category</h2>
-            {newCategoryName} {newCategoryFather}
+            {newCategoryName} {mainCategory}
             <input 
                 type="text" 
                 value={newCategoryName} 
-                onChange={(e) => { setNewCategoryName(e.target.value) }}
+                onChange={(e) => { 
+                    setNewCategoryName(e.target.value) ;
+                }}
                 placeholder="Category name" />
             <select 
                 id="fatherOptions"
-                onChange={(event) => { setNewCategoryFather(event.target.value)}} >
+                onChange={(event) => { 
+                    setMainCategory(event.target.value)
+                }} >
                 <option placeholder="Category father" value="Main">Main</option>
-                {fathersOptions}
+                {fatherCategoryOptions}
             </select>
-            <button onClick={addNewCategory}>Save</button>
+            <button onClick={() => { 
+                if(mainCategory == "Main"){
+                    addNewCategory(categoriesCatalog, newCategory).then( () => {
+                        performPageDraw();
+                    });
+                } else {
+                    addNewSubCategory(mainCategory, categoriesCatalog, newCategoryName).then( () => {
+                        performPageDraw();
+                    });
+                }
+                 }}>Add New Category</button>
            <h2>Avaliable Categories</h2>
            <ul className="listOfCategories">
                 {listOfCategories}
            </ul>
-        </>
+        </PageBox>
     )
 }
 
