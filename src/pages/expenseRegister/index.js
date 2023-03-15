@@ -2,7 +2,8 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { Timestamp } from "firebase/firestore"
-import { getProductCatalog, getAccountsCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { getProductCatalog, getProductUnitsCatalog, getCategoriesCatalog } from "../../globalOperators/globalGetters";
+import { getAccountsCatalog } from "../../firebase/accounts";
 
 import ProductAddOn from "./components/productAddOn";
 import SelectBox from "../../components/forms/select";
@@ -54,6 +55,7 @@ function RegisterExpenses(){
     const [purchaseProductList, setPurchaseProductList] = useState([]);
     const [expenseStore, setExpenseStore] = useState(undefined); 
     const [expenseBankAccount, setExpenseBankAccount] = useState(undefined);
+    const [expenseAccountId, setExpenseAccountId] = useState(undefined);
     const [expenseBankCurrency, setExpenseBankCurrency] = useState(undefined)
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
     const [totalPurchasePrice, setTotalPurchasePrice] = useState(formatValueToMoney("0.00"));
@@ -64,6 +66,7 @@ function RegisterExpenses(){
     const expenseRegister = {
         products: purchaseProductList,
         store: expenseStore,
+        accountId: expenseAccountId,
         account: expenseBankAccount,
         currency: expenseBankCurrency,
         paymenMethod: expensePayMethod,
@@ -85,7 +88,8 @@ function RegisterExpenses(){
             await getAccountsCatalog().then(
                 (res) => {
                     setAccountsCatalog(res)
-                    setExpenseBankCurrency( currencySymbol("Euro") )
+                    setExpenseBankCurrency( currencySymbol("Euro") );
+                    console.log(res)
                 }
             )
             await getProductUnitsCatalog().then(
@@ -164,7 +168,7 @@ function RegisterExpenses(){
             }
         })
 
-        expenseRegisterProcess(expenseRegister, productsCatalog)
+        expenseRegisterProcess(expenseRegister, productsCatalog, accountCatalog)
     };
 
 
@@ -178,6 +182,7 @@ function RegisterExpenses(){
         categoryCatalog,
 
         expenseBankAccount, setExpenseBankAccount,
+        expenseAccountId, setExpenseAccountId,
         expensePayMethod, setExpensePayMethod,
         expenseStore, setExpenseStore,
         expenseBankCurrency,

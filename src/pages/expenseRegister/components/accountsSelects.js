@@ -11,6 +11,8 @@ function AccountSelects(){
     // register constants
     const { expenseBankAccount, setExpenseBankAccount } = useContext(ExpenseContext);
     const { expensePayMethod, setExpensePayMethod } = useContext(ExpenseContext);
+
+    const {expenseAccountId, setExpenseAccountId } = useContext(ExpenseContext);
     
     /* ################################# */
     // Interface constants
@@ -20,8 +22,10 @@ function AccountSelects(){
     /* ################################# */
     // Initial load
     const setAccounts = useEffect( () => {
+        console.log("ac", accountCatalog)
         if( accountCatalog !== undefined){
             // set product added info
+            setExpenseAccountId(accountCatalog[0].id)
             setExpenseBankAccount(accountCatalog[0].Name)
             setExpensePayMethod(accountCatalog[0].PaymentMethods[0]);
             // set options info
@@ -29,6 +33,7 @@ function AccountSelects(){
             setPaymentsOptions(accountCatalog[0].PaymentMethods);
         }
     }, [accountCatalog])
+
     return(
         <>
             <SelectBox 
@@ -38,6 +43,8 @@ function AccountSelects(){
                     let accountDetails = accountCatalog.find( ({Name}) => Name == key )
                     setExpenseBankAccount(key)
                     setExpensePayMethod(accountDetails.PaymentMethods[0])
+                    setPaymentsOptions(accountDetails.PaymentMethods);
+                    setExpenseAccountId(accountDetails.id)
                 }}  />  
             <SelectBox 
                 label="Payment Method: "

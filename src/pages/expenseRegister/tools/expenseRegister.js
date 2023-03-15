@@ -1,11 +1,13 @@
 import { serverTimestamp } from "firebase/firestore";
 import { addProductToCatalog, addProductPriceHistory, updateProductDoc } from "../../../firebase/productRegistration";
 import { expenseRegistration } from "../../../firebase/expenseRegistration";
+import { getAccountStatus, addBankExpense } from "../../../firebase/accounts";
 
 export async function expenseRegisterProcess(expenses, productCatalog){
 
-    console.log("Expenses: ", expenses)
-    console.log("Catalog of products: ", productCatalog)
+    console.log("Expenses: ", expenses, "Catalog of products: ", productCatalog)
+
+    const expenseProductMapId = [];
 
     ////////////////
     // set the arrays for both process
@@ -27,6 +29,7 @@ export async function expenseRegisterProcess(expenses, productCatalog){
     // Add New Products
     //// para cada novo produto
     newProducts.forEach(product => {
+        ///////////////
         // define um novo objeto
         let TempProduct = {
             Name: product.Name,
@@ -37,9 +40,13 @@ export async function expenseRegisterProcess(expenses, productCatalog){
             AveragePrice: product.AveragePrice,
             CreatedAt: serverTimestamp(),
         }
+        ///////////////
         // e adiciona ao firebase
         addProductToCatalog(TempProduct)
-            .then( (res) => {
+            .then( (productIdResponse) => {
+                console.warn("New product Added to the catalog", productIdResponse)
+                expenseProductMapId.push(productIdResponse)
+                ///////////////
                 // entao, cria-se um historico de preco
                 const priceHistoryItem = {
                     CreatedAt: serverTimestamp(),
@@ -49,23 +56,20 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                     Store: product.Store
                 }
                 // e se adiciona ao firebase
-                addProductPriceHistory(priceHistoryItem, res)
+                addProductPriceHistory(priceHistoryItem, productIdResponse).then( (hisotryResponse) => {
+                    console.warn("New Product Price history added", hisotryResponse)
+                })
             }    
         )
     });
 
     /////////////////
-    /// produtos existentes
+    /// for each existent product
     existentProducts.forEach( product => {
-
-        // calc average price
-        // update last price
-        let docId =  product.id;
-        let productDoc = {
-            LastPrice: product.Price
-        }
-        updateProductDoc(productDoc, docId)
-
+        let docId = product.id;
+        expenseProductMapId.push(docId)
+        ///////////////
+        // Creates a price history
         const priceHistoryItem = {
             CreatedAt: serverTimestamp(),
             Price: product.Price,
@@ -73,35 +77,73 @@ export async function expenseRegisterProcess(expenses, productCatalog){
             TotalPrice: product.TotalPrice,
             Store: product.Store
         }
-        addProductPriceHistory(priceHistoryItem, docId)
+        addProductPriceHistory(priceHistoryItem, docId).then( (response) => {
+            console.warn("Existing Product price history added", response)
+            ///////////////
+            // then calc the product average price
+
+            ///////////////
+            // update product last price
+            
+            let productDoc = {
+                LastPrice: product.Price
+            }
+            updateProductDoc(productDoc, docId).then( (response) => {
+                console.warn("Existing Product Doc updated", response)
+            });
+        })
     });
     // ir no getCatalogs e adicionar ao objeto de produtos
 
 
     ///////////////////////////////////////
-    // Register New Expense
-    let nameProducts = expenses.products.map( key => key.Name )
+    // Register a New Expense
+    // create a new expense object
     let newExpense = {
-        products: nameProducts,
+        products: expenseProductMapId,
         totalExpense: expenses.totalExpense,
         store: expenses.store,
         paymenMethod: expenses.paymenMethod,
         account: expenses.account,
         CreatedAt: serverTimestamp()
     }
-    expenseRegistration(newExpense);
+    expenseRegistration(newExpense).then( (response) => {
+        console.warn("Expense register created", response)
+    });
 
     ///////////////////////
     // Run bank account catalog
-
-
-
+    // get the bank account status and validates    
+    getAccountStatus(expenses.accountId).then( (account) => {
+        const status = account.Status;
+        const funds = account.CurrentFunds;  
+        
+        ///////////////////////////////////
+        // new balance object
+        const newBalance = {
+            CreatedAt: serverTimestamp(),
+            Type: "debit",
+            Value: expenses.totalExpense,
+            PayMethod: expenses.paymenMethod,
+            LastBalance: account.CurrentFunds,
+            NewBalance: (account.CurrentFunds - expenses.totalExpense)
+        }
+        // validates
+        if(status === true){
+            if(newBalance.Value > funds){
+                alert("Insuficient funds");
+                return;
+            } else {
+                
+                ///////////////////////////////////
+                // add new balance
+                addBankExpense(expenses.accountId, newBalance).then( (balance) => {
+                    console.warn("Bank expense registration done", balance)
+                })
+            }
+        } else {
+            alert("Bank account not avaliable");
+            return; 
+        }
+    })
 }
-
-        /*
-        console.log("Add nonexistent products to the catalog / also fix the catalog page")
-        console.log("Add price history to existent products in the catalog")
-        console.log("add expense register to the expenses history")
-        console.log("add movment to the bank account")
-        console.log("update the screen")
-        */

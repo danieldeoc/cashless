@@ -14,16 +14,18 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const collectionRef = "expenses";
 const db = getFirestore();
 
 
-//////////////
-// Adds a new product to the catalog
+/* ################################## */
+// EXPENSE REGISTER
+// Adds a new expense register to the general list
+/* ########################## */
 export async function expenseRegistration(data){
-    await addDoc(collection(db, "expenses") , data)
+    await addDoc(collection(db, collectionRef) , data)
         .then((res) => {
-            console.log(res)
-            console.log("New Expense Regitered")
+            return res;            
         }).catch( err => console.log(err))
 }
 
@@ -37,7 +39,7 @@ export async function expenseRegistration(data){
 export async function getExpensesCatalog(queryOptions){
     const expensesCatalog = [];
     if(queryOptions === undefined || queryOptions === "default"){
-        var queryKey = query(collection(db, "expenses"), orderBy('CreatedAt', 'asc')) 
+        var queryKey = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc')) 
     } else {
         var queryKey = queryOptions;
     }

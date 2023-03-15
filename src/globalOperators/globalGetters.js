@@ -71,25 +71,6 @@ export async function deletProductFromCatalog(id){
 
 
 /* ################################## */
-// Get list of avaliable bankAccounts
-/* ########################## */
-export async function getAccountsCatalog(){
-    let bankCatalog = []
-    const queryList = query(collection(db, "bank_accounts"), orderBy('Name', 'asc')) 
-    await getDocs(queryList).then( (snapshot) => {
-        snapshot.docs.forEach( (doc) => {
-            if(doc.data().Status === true){
-                bankCatalog.push( {...doc.data(), id: doc.id} )
-            }
-        });        
-    }).catch( (err) => {
-        console.log("err")
-    });;
-    return bankCatalog;
-}
-
-
-/* ################################## */
 // Get Categories Catalog
 /* ########################## */
 export async function getCategoriesCatalog(){
