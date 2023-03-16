@@ -6,7 +6,7 @@ export function getDate(when){
 
     
     if(when){
-        day = new Date(when);
+        day = new Date(when.seconds*1000);
         console.log(day)
     } else {
         console.log("no when")
@@ -17,8 +17,10 @@ export function getDate(when){
     let dd = String(day.getDate()).padStart(2, '0');
     let mm = String(day.getMonth() + 1).padStart(2, '0');
     let yyyy = day.getFullYear();
-
-    let finalDate = dd + '/' + mm + '/' + yyyy + " " + day.getHours() +":"+day.getMinutes();
+    let minutes = String(day.getMinutes());
+    console.log(minutes)
+    if(minutes.length == 1) minutes = "0"+minutes;
+    let finalDate = dd + '/' + mm + '/' + yyyy + " " + day.getHours() +":"+minutes;
     return finalDate;
 
 }
