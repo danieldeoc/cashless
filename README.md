@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.80 - Category page interface added / select component created / input component improvaed, category page logic improved / fontawesome instlled > free solid and core / message system component started / loader image added / confirm dialog added / block page loader added / ul table list style created / button styles primary / default, green and red created / 
 - 0.0.79 - Category page code rewrited, firebase categories added, first interface layout itens added, sass style added
 - 0.0.78 - Bank registration code upgraded, bank balance history created, bank balance update function added, expense register added, product price history added, general bug corrections
 - 0.0.41 -form clear after submit
@@ -17,10 +18,11 @@ Bank Account register
 - remove page reload on add bank account
 
 Categories
-- add confirm dialog before remove
+- Check what happens when categories list is empty
 
 Product Catalog
-- 
+- Check what happens when product catalog list is empty
+- does not allow delet if product exists in: expense list
 
 Dashboard
 - Create bank balance overviews
@@ -55,3 +57,9 @@ Expense register
 
 # code review
 - review react code
+
+-----------------
+
+## Future Improvments
+# Categories Register
+- Add contract/expand in ul list

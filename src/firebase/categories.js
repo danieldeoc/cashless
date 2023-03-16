@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, updateDoc, serverTimestamp, addDoc, orderBy, doc, deleteDoc, Timestamp } from "firebase/firestore"
+import { returnMessage } from "../tools/alertTools";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -74,21 +75,25 @@ export async function deleteSubCateory(catId, subcategory, catalog){
 // Add New Category 
 /* ########################## */
 export async function addNewCategory(catalog, data){
+    let response = undefined;
     if( data.Name !== undefined){       
-       
         const nameCheck = catalog.find( ({Name}) => Name == data.Name);
         if( nameCheck === undefined ){
             // add a new main category
             await addDoc(colRef, data).then((res) => {
                 console.warn("New Category added", res)
-            }).catch( err => console.log(err))
+                response = returnMessage("New category added")
+            }).catch( (err) => {
+                console.log(err);
+                response = returnMessage("Error:" + err, "error");
+            })
         } else {
-            alert("Name already exists")
+            response = returnMessage("No name defined:", "error");
         } 
-    
     } else {
-        alert("You need to define a name for the category")
+        response = returnMessage("No name defined:", "error");
     }
+    return response;
 }
 
 

@@ -3,6 +3,7 @@ import { addProductToCatalog, addProductPriceHistory, updateProductDoc } from ".
 import { expenseRegistration } from "../../../firebase/expenseRegistration";
 import { getAccountStatus, addBankExpense } from "../../../firebase/accounts";
 
+
 export async function expenseRegisterProcess(expenses, productCatalog){
 
     console.log("Expenses: ", expenses, "Catalog of products: ", productCatalog)

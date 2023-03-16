@@ -31,30 +31,6 @@ export async function getProductUnitsCatalog(){
     return productUnits;
 }
 
-/* #################################################################### */
-/* #################################################################### */
-/* #################################################################### */
-// Products CRUD
-
-//////////////
-// Return Products Catalog
-export async function getProductCatalog(){
-    let productCatalog = [];
-    const queryList = query(collection(db, "products_catalog"), orderBy('Name', 'asc')) 
-    await getDocs(queryList)
-        .then( (snapshot) => {              
-            snapshot.docs.forEach((doc) => {
-                productCatalog.push({ ...doc.data(), id: doc.id})
-            })
-        }).catch( (err) => {
-            return err;
-        }).finally(() => {
-            if(productCatalog.length == 0){
-                productCatalog.push("No products avaliable")
-            }
-        })
-    return productCatalog;
-}
 
 
 //////////////

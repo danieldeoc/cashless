@@ -3,25 +3,41 @@ import React, { useState } from "react";
 
 function SelectBox(props){
     
-    if(props.options !== undefined){
-        var options = props.options.map( (option, i) => (
-            <option key={i}>{option}</option>
-        ))
-    } else if( props.options === undefined || props.options[0] == "Wait")   {
-        var options =  <option>No options</option>;
-    } else {
-        var options =  <option>Wait...</option>;
+    const waiter = <option>Wait...</option>;
+    const selectOptions = [];
+    const [id, setId] = useState(props.id);
+    
+    let classes = "input-select ";
+    if(props.classes) classes = classes+props.classes;
+    
+    if(props.defaultOption){
+        selectOptions.push(props.defaultOption)
     }
+
+    if(props.options !== undefined ){
+        props.options.forEach(key => {
+            selectOptions.push(key)
+        });
+    } else {
+        console.error("Props options is undefined, its not an array or istn loaded yet")
+    } 
+    
+    
+    
+
     return(
-        <label>
-            {props.label}
+        <label className="input-label select-input">
+            <span>{props.label}</span>
             <select 
+                className={classes}
+                id={id}
                 value={props.value}
                 onChange={ (e) => { 
-                    
-                    props.onChangeHandler(e.target.value)
+                   props.onChangeHandler(e.target.value)
                 }}>
-                {options}
+                {selectOptions.map( (optionKey, i) => (
+                    <option key={i} value={optionKey}>{optionKey}</option>  
+                ))}
             </select>
         </label>
     )

@@ -1,18 +1,40 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 ////////////////////////////////////////////////////////
 /// STYLES
+/// colors
+
+$blue: #1abc9c;
+$lightBlue: #16a085;
+$green: #2ecc71;
+$lightGreen: #27ae60;
+$clearBlue: #3498db;
+$darkClearBlue: #2980b9;
+$purple: #9b59b6;
+$darkPurple: #8e44ad;
+$dark: #34495e;
+$darken: #2c3e50;
+$yellow: #f1c40f;
+$orange: #f39c12;
+$softOrange: #e67e22;
+$darkOrange: #d35400;
+$pink: #e74c3c;
+$softRed: #c0392b;
+$white: #ecf0f1;
+$gray1: #bdc3c7;
+$gray2: #95a5a6;
+$gray3: #7f8c8d;
+
+
+
+
+
+/// 
+/// 
 $bg: #f2f2f2;
 $white: #fafafa;
 
@@ -25,10 +47,13 @@ $xl: 32px;
 $xxl: 40px;
 
 // border radius
-$border-radius: $md;
+$border-radius: $sm;
 
 // shadow
 $box-shadow: 0 4px 8px 2px rgba(0,0,0,0.05);
+
+// transition
+$transition: all 500ms ease-in-out;
 
 /* ######################### */
 /* AUTOCOMPLETE */
@@ -43,9 +68,14 @@ $box-shadow: 0 4px 8px 2px rgba(0,0,0,0.05);
 html, body {
   background-color: $bg;
 }
-body{ padding-bottom: $lg;}
+body{ padding-bottom: $lg; min-width: 320px;}
 
-* { font-family: 'Lato', Helvetica, Arial, 'Roboto', sans-serif; }
+@media screen and (max-width: 440px) {
+  body{ padding: 0 $sm;}
+  
+}
+
+* { font-family: 'Lato', Helvetica, Arial, 'Roboto', sans-serif; outline: none; }
 
 ////////////////////////////////////////////////////////
 /// PAGE STYLES
@@ -59,13 +89,13 @@ body{ padding-bottom: $lg;}
   box-sizing: border-box;
 }
 
-
+////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// PAGE TEXTS
 .page-title{
-  margin: 0 0 $lg;
+  margin: $xxl 0 $lg;
   font-size: 2rem;
-  color: #333;
+  color: $darken;
   font-weight: bold;
   position: relative;
   padding-bottom: $sm;
@@ -76,5 +106,297 @@ body{ padding-bottom: $lg;}
   width: 60px;
   height: 2px;
   border-radius: 8px;
-  background-color: orange;
+  background-color: $yellow;
+}
+
+
+.section-title{
+  margin: $sm 0 $sm;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: $dark;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: $sm;
+}
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Buttons
+.btn{
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  padding: $md $lg;
+  text-align: center;
+  border-radius: $border-radius;
+  margin-bottom: $md;
+  border: none;
+
+  text-transform: uppercase;
+  color: $dark;
+  font-weight: bold;
+  transition: $transition;
+}
+
+.btn.primary{
+  background-color: $blue;
+  color: $white;
+}
+.btn.primary:hover,
+.btn.primary:focus{
+  background-color: $clearBlue;
+  color: rgba(255,255,255,0.6);
+  transition: $transition;
+}
+
+
+.btn.primary.red{
+  background-color: $softRed;
+  color: $white;
+}
+.btn.primary.red:hover,
+.btn.primary.red:focus{
+  background-color: $softOrange;
+  color: rgba(255,255,255,0.6);
+  transition: $transition;
+}
+
+
+.btn.primary.green{
+  background-color: $green;
+  color: $white;
+}
+.btn.primary.green:hover,
+.btn.primary.green:focus{
+  background-color: $lightGreen;
+  color: rgba(255,255,255,0.6);
+  transition: $transition;
+}
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// FORMS
+
+.input-label{
+  display: block;
+  padding: 0 0 $md;
+  box-sizing: border-box;
+}
+
+.input-label > span{
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: $dark;
+  font-weight: regular;
+  position: relative;
+  padding-bottom: $sm;
+  display: block;
+}
+
+.input-label .input-text{
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: $md;
+  border-radius: $border-radius;
+  border:1px solid $gray3;
+  color: $gray3;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.input-label .input-text:focus{
+  color: $darkClearBlue;
+  border:1px solid $lightBlue;
+}
+
+
+// Select
+
+.input-label .input-select{
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: $md;
+  border-radius: $border-radius;
+  border:1px solid $gray3;
+  color: $gray3;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// ALERT MESSAGE
+
+.alert-message{
+  position: fixed;
+  bottom: -40%;
+  left: 50%;
+  width: 300px;
+  box-sizing: border-box;
+  margin-left: -150px;
+  background-color: $gray1;
+  color: $dark;
+  border-radius: $border-radius;
+  padding: $lg;
+  box-shadow: $box-shadow;
+  transition: $transition;
+}
+
+.alert-message.display{
+  bottom: 5%;
+  transition: $transition;
+}
+
+.alert-message > span{
+  float: right;
+  color: $white;
+  cursor: pointer;
+}
+
+.alert-message.success {
+  background-color: $lightGreen;
+  color: $white;
+}
+.alert-message.error {
+  background-color: $softRed;
+  color: $white;
+}
+.alert-message.warning {
+  background-color: $softOrange;
+  color: $white;
+}
+
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Loadbox
+.loadBox{ 
+  width: 100%; 
+  text-align: center; 
+  box-sizing: border-box;
+  padding: $lg;}
+
+.loadBox svg path,
+.loadBox svg rect{
+  fill: $orange !important;
+  background-color: $orange;
+}
+
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Table list
+.table-list{
+  list-style: none;
+  margin: 0 0 $md;
+  padding: 0;
+  border: 1px solid $gray1;
+  border-radius: $border-radius;
+}
+
+.table-list li{
+  border-bottom: 1px solid $gray1;
+  padding: $md;
+  color: $dark;
+  font-weight: bold;
+  font-size: 1rem;
+}
+.table-list li .delete-item-list{
+  float: right;
+  color: $softRed;
+  cursor: pointer;
+}
+.table-list li:nth-child(odd){
+  background-color: rgba(52,152,219,0.05)
+}
+
+.table-list li:last-child{
+  border: none;
+}
+
+.table-list li > ul{
+  border: 1px solid $gray1;
+  border-radius: $border-radius;
+  margin: $md 0;
+  padding: 0;
+}
+
+.table-list li > ul li{
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: normal;
+  
+}
+
+.table-list li .li-container{
+  border: 1px solid $gray2;
+  background-color: $white;
+  border-radius: $border-radius;
+  padding: $md;
+  margin: $md 0;
+  font-size: 0.9rem;
+}
+.table-list li .li-container .li-container-label{
+  display: block;
+  padding-bottom: $sm;
+  font-weight: 400;
+}
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Confirm Dialog
+.window-overlay{
+  position: fixed;
+  left: 0; right: 0; bottom: 0; top: 0;
+  z-index: 10000;
+  width: 100%; height: 100%;
+  box-sizing: border-box;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.confirm-dialog{
+  position: absolute;
+  width: 350px;
+  left: 50%;
+  margin-left: -175px;
+  top: 33%;
+  box-sizing: border-box;
+  padding: $md $md 0;
+  background-color: $white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+
+}
+
+.confirm-dialog p{
+  color: $darken;
+  font-size: 1rem;
+  line-height: 1.3rem;
+  margin: 0;
+  padding: $sm 0 $lg 0;
+  display: block;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+}
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Block Page Loader
+.block-page-loader.window-overlay{
+  background-color: rgba(255,255,255,0.8);
+}
+
+.block-page-loader.window-overlay img{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
 }

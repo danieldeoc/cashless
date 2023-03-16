@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
+import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, where } from "firebase/firestore"
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -38,12 +38,16 @@ export async function expenseRegistration(data){
 /* ########################## */
 export async function getExpensesCatalog(queryOptions){
     const expensesCatalog = [];
+    let querySettings;
+    console.log(queryOptions)
     if(queryOptions === undefined || queryOptions === "default"){
-        var queryKey = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc')) 
+        console.log("bei")
+        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc')) 
     } else {
-        var queryKey = queryOptions;
+        console.log("ei")
+        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc'), where(queryOptions.field, queryOptions.operator, queryOptions.criteria));
     }
-    await getDocs(queryKey)
+    await getDocs(querySettings)
         .then( (snapshot) => {
             snapshot.docs.forEach( (doc) => {
                 expensesCatalog.push( {...doc.data(), id: doc.id} )

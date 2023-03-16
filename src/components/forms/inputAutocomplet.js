@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect,useRef, useState, useContext } from "react";
-import { randomNumber } from "../../customOperators/mathOperators";
+import { randomNumber } from "../../tools/mathTools";
 import { ExpenseContext }  from '../../pages/expenseRegister/index.js';
 
 function InputAutoComplete(props){

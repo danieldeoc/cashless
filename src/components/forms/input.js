@@ -2,23 +2,26 @@ import {React, useState} from "react";
 
 
 function Input(props){
-    const [inputValue, setInputValue] = useState(props.value);
-    if( props.type == "number"){
-        const steps = "steps='0.01'"
-    } else {
-        const steps = " "
-    }
+        
+    let inputValue = props.value;
+    if(props.value === undefined) inputValue = "";
+    
+    const [classes, setClasses] = useState("input-text")
+
+    if(props.classes) setClasses("input-text "+props.classes);
+    
+
     return(
-        <label>
-            {props.label}
+        <label className="input-label">
+            <span>{props.label}</span>
             <input
+                className={classes}
                 id={props.id}
                 placeholder={props.placeholder}
                 defaultValue={inputValue}
                 type={props.type}
                 step={props.steps}
                 onChange={ (e) => { 
-                    setInputValue(e.target.value);
                     props.onChangeHandler(e.target.value)
                 }}
                 

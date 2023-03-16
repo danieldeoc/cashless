@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useContext, createContext, useRef } from "react";
 import { ExpenseContext}  from '../index.js';
+import { randomNumber,productTotalPrice } from "../../../tools/mathTools.js";
 
 import InputAutoComplete from "../../../components/forms/inputAutocomplet";
 import Input from "../../../components/forms/input";
-import { productTotalPrice, randomNumber} from "../../../customOperators/mathOperators.js";
 import UnitSelect from "./unitySelect.js";
 import CategoryFields from "./categorySelects.js";
 
 import { serverTimestamp } from "firebase/firestore";
-import { GetDate } from "../../../customOperators/dateOperators.js";
+
 
 export const ProductContext = createContext();
 
