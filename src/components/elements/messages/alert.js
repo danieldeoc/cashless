@@ -5,8 +5,8 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 function Alert(props){
 
-    const alertBox = useRef()
-
+    const alertBox = useRef();
+    
     let message = props.message;
     if(!message) message= "Undefined message";
 
@@ -23,6 +23,8 @@ function Alert(props){
             }, 5000)
         }, 1000)
     }
+    
+    
 
     function hideAlert(){
         setTimeout( () => {

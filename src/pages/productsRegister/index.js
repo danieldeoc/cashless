@@ -22,6 +22,8 @@ import Alert from "../../components/elements/messages/alert";
 import PrimaryButton from "../../components/elements/buttons/primaryButton";
 import { getDate } from "../../tools/dateTools";
 
+import {Link} from "react-router-dom";
+
 function ProductsCatalog(){   
     //////////////////////////////
     // Get General Information
@@ -39,6 +41,8 @@ function ProductsCatalog(){
     const [productSubCategory, setProductSubCategory] = useState(undefined)
     const [productAmmountType, setProductAmmountType] = useState(undefined)
 
+    const [productPriceHistory, setProductPriceHistory] = useState(false)
+
     const newProduct = {
         Name: productName,
         Category: productCategory,
@@ -55,7 +59,7 @@ function ProductsCatalog(){
     const [productCatalogList, setProductCatalogList] = useState(loader);
     const [newCategory, setNewCategory] = useState("")
     const [newSubCategory, setNewSubCategory] = useState("");
-    const [newAmmountType, setNewAmmountType] = useState("")
+    
 
     //////////////////////
     // messages
@@ -133,6 +137,14 @@ function ProductsCatalog(){
             )
     }
 
+    function checkPriceHistory(key){
+        let hasPriceHistory = productsCatalog.find( ({id}) => id == key);
+        if(hasPriceHistory.LastPrice != 0){
+            let linkAdress = "/products/priceHistory?productId="+key;
+            return <Link to={linkAdress}>Check Price History</Link>
+        } 
+    }
+
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
     // FIRST PAGE LOAD
@@ -183,6 +195,8 @@ function ProductsCatalog(){
                                 <strong>Created at:</strong><br/>
                                  {getDate(key.CreatedAt)}
                             </span>
+
+                            {checkPriceHistory(key.id)}
                         </div>
 
                     </li>

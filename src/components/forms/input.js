@@ -9,6 +9,8 @@ function Input(props){
     const [classes, setClasses] = useState("input-text")
 
     if(props.classes) setClasses("input-text "+props.classes);
+
+    
     
 
     return(
@@ -23,6 +25,11 @@ function Input(props){
                 step={props.steps}
                 onChange={ (e) => { 
                     props.onChangeHandler(e.target.value)
+                }}
+                onKeyUp={ (e) => { 
+                    if(props.onKeyUpHandler){
+                        props.onKeyUpHandler(e.target.value)
+                    }
                 }}
                 
                 />

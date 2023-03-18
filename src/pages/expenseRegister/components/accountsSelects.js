@@ -6,12 +6,8 @@ function AccountSelects(){
     /* ################################# */
     // Gets the information catalogs from userContext
     const { accountCatalog } = useContext(ExpenseContext);
-
-    ///////////////////
-    // register constants
     const { expenseBankAccount, setExpenseBankAccount } = useContext(ExpenseContext);
     const { expensePayMethod, setExpensePayMethod } = useContext(ExpenseContext);
-
     const {expenseAccountId, setExpenseAccountId } = useContext(ExpenseContext);
     
     /* ################################# */
@@ -22,7 +18,6 @@ function AccountSelects(){
     /* ################################# */
     // Initial load
     const setAccounts = useEffect( () => {
-        console.log("ac", accountCatalog)
         if( accountCatalog !== undefined){
             // set product added info
             setExpenseAccountId(accountCatalog[0].id)

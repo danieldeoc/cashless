@@ -5,16 +5,31 @@ import { Timestamp } from "firebase/firestore"
 import { getProductUnitsCatalog } from "../../globalOperators/globalGetters";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
-import { currencySymbol, formatValueToMoney } from "../../tools/mathTools.js";
+import { currencySymbol, formatValueTo2Digit, formatValueToMoney } from "../../tools/mathTools.js";
 import ProductAddOn from "./components/productAddOn";
-import Input from "../../components/forms/input";
+
 import AccountSelects from "./components/accountsSelects";
 
 import { expenseRegisterProcess } from "./tools/expenseRegister";
 
 import { getProductCatalog } from "../../firebase/productRegistration";
 import { getCategoriesCatalog } from "../../firebase/categories";
-import { getExpensesCatalog } from "../../firebase/expenseRegistration";
+import { deleteExpense, getExpensesCatalog } from "../../firebase/expenseRegistration";
+
+import PageBox from "../../components/elements/pageBox";
+import PageTitle from "../../components/elements/texts/pageTitle";
+import SectionTitle from "../../components/elements/texts/sectionTitle";
+import Input from "../../components/forms/input";
+import SelectBox from "../../components/forms/select";
+import PrimaryButton from "../../components/elements/buttons/primaryButton";
+import Alert from "../../components/elements/messages/alert";
+import Loader from "../../components/elements/loader";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faX } from '@fortawesome/free-solid-svg-icons'
+import ConfirmDialog from "../../components/elements/messages/confirm";
+import { getDate } from "../../tools/dateTools";
+
 
 /* 
     in order to register a new expenses it will:
@@ -62,7 +77,7 @@ function RegisterExpenses(){
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
     const [totalPurchasePrice, setTotalPurchasePrice] = useState(formatValueToMoney("0.00"));
 
-    const [generalId, setGeneralId] = useState(1)
+    const [generalId, setGeneralId] = useState(1);
     
     // expense register object
     const expenseRegister = {
@@ -77,52 +92,120 @@ function RegisterExpenses(){
     
     /* ################################# */
     // PAGE CONSTANTS > then, is setted the interface constants
-    const [listExpenses, setListExpenses] = useState(["Wait..."]); // draw the expense list
+    const [listExpenses, setListExpenses] = useState(<Loader />); // draw the expense list
     const [productMultipleRegister, setProducMultipleRegister] = useState([]) // allows to draw the multiple register
+
+    //////////////////////
+    // messages
+    const [returningAlerts, setReturningAlerts] = useState("");
 
     /* ################################# */
     // First page render, gets the catalog of avaliable information
+    async function fetchData(){
+        await getProductCatalog().then(
+            res => setProductsCatalog(res)
+        );
+        await getAccountsCatalog().then(
+            (res) => {
+                setAccountsCatalog(res)
+                setExpenseBankCurrency(currencySymbol("Euro") );                    
+            }
+        )
+        await getProductUnitsCatalog().then(
+            res => setUnitsCatalog(res)
+        );   
+        await getCategoriesCatalog().then(
+            res => setCategoryCatalog(res)
+        )
+        await getExpensesCatalog("default").then(
+            res => setExpensesCatalog(res)
+        )
+    }
+
     const firstRender = useEffect( () => {
-        const fetchData = async () => {
-            await getProductCatalog().then(
-                res => setProductsCatalog(res)
-            );
-            await getAccountsCatalog().then(
-                (res) => {
-                    setAccountsCatalog(res)
-                    setExpenseBankCurrency( currencySymbol("Euro") );
-                    console.log(res)
-                }
-            )
-            await getProductUnitsCatalog().then(
-                res => setUnitsCatalog(res)
-            );   
-            await getCategoriesCatalog().then(
-                res => setCategoryCatalog(res)
-            )
-            await getExpensesCatalog("default").then(
-                res => setExpensesCatalog(res)
-            )
-        }
-        fetchData();
+        fetchData()
     }, []);
 
+    ///////////////////////
+    // Delet Functions
+    function denyDelete(){
+        setReturningAlerts(null);
+    }
+
+    let allowDelete = true;
+    function deleteExpenseItemList(id){
+        const deleteOption = <span 
+                className="delete-item-list" 
+                onClick={ () => { 
+                    setReturningAlerts(
+                        <ConfirmDialog 
+                            message="Do you realy want to delete this expense register?"
+                            onConfirmHandler={() => { 
+                                /* deleteExpense(id).then(
+                                    (res) => {
+                                        getProductCatalog().then(
+                                            res => setProductsCatalog(res)
+                                        );
+                                    }
+                                ) */
+                            }}
+                            onDenyHandle={denyDelete}
+                            />)
+                    }}>
+                <FontAwesomeIcon icon={faX} />
+            </span>
+        if(allowDelete){
+            allowDelete = false;
+            return deleteOption;
+        }
+        
+    }
+
+    ///////////////////////////////
+    // return products from the catalog
+    function getProductsFromCatalog(products){
+        if(productsCatalog){
+            let list = [];
+            products.forEach( (key, i) => {
+                let product = productsCatalog.find( ({id}) => id == key)
+                if(product){
+                    list.push(<div key={i} className="product-name">{product.Name}  <span className="product-price">{product.LastPrice}{expenseBankCurrency}</span></div>);
+                } else {
+                    return "No data avaliable..."
+                }
+            })
+            return list; 
+        }
+    }
 
     /////////////////////////
     // Once with data, it populates and updates the interface on data change
     const draw = useEffect( () => {
         // draw the list of expenses
-        console.log(expensesCatalog)
         if(expensesCatalog !== undefined){
             setListExpenses(
                 expensesCatalog.map( key => ( 
                     <li key={key.id}>  
-                        {key.products} 
                         {key.store}
-                        {expenseBankCurrency}{key.totalExpense}
-                        {key.account}
-                        {key.paymentMethod}
-                        {Date(key.CreatedAt)}
+                        {deleteExpenseItemList(key.id, key.CreatedAt)}
+                        <span className="table-list-right-side table-list-currency">
+                            {key.totalExpense} {expenseBankCurrency}
+                        </span>
+                        <div className="li-container">
+                            <span className="li-container-label">
+                                <strong>Products:</strong> <br/>
+                                {getProductsFromCatalog(key.products)}
+                            </span>
+                            <span className="li-container-label">
+                                <strong>Account:</strong> <br/>
+                                {key.account} by {key.paymentMethod}
+                            </span>
+                            <span className="li-container-label">
+                                <strong>Date:</strong> <br/>
+                                {getDate(key.CreatedAt)}
+                            </span>
+
+                        </div>
                     </li>
                 ))
             ); 
@@ -144,33 +227,35 @@ function RegisterExpenses(){
         );
     }
 
-    ///////////////////////////
-    /// expense register show
-    function showList(){
-        console.log("Expenses: ", expenseRegister) 
-        console.log("Catalog: ", productsCatalog) 
-    }
-
     //////////////////////
     // set total expense cost
     function calcTotalPurchasePrice(){
         let totalPurchase = 0;
         expenseRegister.products.forEach( key => {
-            totalPurchase = totalPurchase + key.TotalPrice;
+            totalPurchase = Number(totalPurchase) +  Number(key.TotalPrice);
         })
-        setTotalPurchasePrice(totalPurchase); 
+        setTotalPurchasePrice(formatValueTo2Digit(totalPurchase)); 
     }
 
     /////////////////////////////////
     // Register Expense
-    function registerExpense(){
-        expenseRegister.products.forEach( key => {
-            if(key.Store === undefined ){
-                key.Store = expenseStore
+    async function registerExpense(){
+        setReturningAlerts(<Loader type="fullscreen" /> )
+        setPurchaseProductList(<Loader />)
+        await expenseRegisterProcess(expenseRegister, productsCatalog).then(
+            (response) => {
+                setReturningAlerts(
+                    <Alert
+                        message={response.message}
+                        classes={response.classes}
+                        display={response.display}
+                        />
+                );
+                setTimeout(() => {
+                    window.location.href = "/expenses"
+                }, 2000)
             }
-        })
-
-        expenseRegisterProcess(expenseRegister, productsCatalog, accountCatalog)
+        )
     };
 
 
@@ -194,40 +279,55 @@ function RegisterExpenses(){
         calcTotalPurchasePrice 
     } 
 
+    function show(){
+        console.log(expenseRegister)
+    }
+
     /////////////////////////////////
     /* INTERFACE */
     return(       
         <ExpenseContext.Provider value={globalVariables}>
-            <button onClick={showList}>LIst</button>
-            <h1>New Expense</h1>
-            <div className="addNewExpense">
-                <div id="productsBox">
+            <button onClick={show}>Show</button>
+            <PageTitle text="Expenses" />
+            <PageBox>
+                <SectionTitle text="Add a new expense" />  
+                <div id="productsBox" className="product-register-box">
                     <ProductAddOn generalId={"1"} />
                     {productMultipleRegister}
+                <PrimaryButton
+                    label="Add product"
+                    classes="green"
+                    onClickHandler={addProduct} />
                 </div>
-                <button onClick={addProduct}>Add Product</button>
-                
+
                 <Input
                     id="store"
                     label="Store:"
+                    placeholder="Store you are buying it"
                     value={expenseStore}
                     onChangeHandler={ (storeName) => { 
                         setExpenseStore(storeName);
                     }}
-                    />
-
-                <AccountSelects />
-
-                <div>
-                    Total purchase:  {totalPurchasePrice} {expenseBankCurrency}
+                    />   
+            
+                <AccountSelects /> 
+            
+                <div className="read-field-value money">
+                    Total:  {totalPurchasePrice} {expenseBankCurrency}
                 </div>
 
-                <button onClick={registerExpense}>Register Expense</button>
-            </div>
-            <h2>List of Expenses</h2>
-            <ul>
-                {listExpenses}
-            </ul>
+                <PrimaryButton
+                        label="Add purchase"
+                        onClickHandler={registerExpense} />
+            </PageBox>
+
+            <PageBox>
+                <SectionTitle text="Expenses" />
+                <ul className="table-list">
+                    {listExpenses}
+                </ul>
+            </PageBox>
+            {returningAlerts}  
         </ExpenseContext.Provider>
         
     )

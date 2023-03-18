@@ -35,6 +35,12 @@ export async function addProductToCatalog(data){
     return response;
 }
 
+/// custom function to add a product by the expense process and return the id
+export async function addProductToCatalogByExpenses(data){
+    const docRef = await addDoc(collection(db, collectionRef), data);
+    return docRef.id;
+}
+
 
 /* #################################################################### */
 /* #################################################################### */

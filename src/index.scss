@@ -55,11 +55,6 @@ $box-shadow: 0 4px 8px 2px rgba(0,0,0,0.05);
 // transition
 $transition: all 500ms ease-in-out;
 
-/* ######################### */
-/* AUTOCOMPLETE */
-.autoCompleteList li{ display: none;}
-.autoCompleteList li.show{ display: block;}
-
 
 
 ////////////////////////////////////////////////////////
@@ -120,6 +115,12 @@ body{ padding-bottom: $lg; min-width: 320px;}
   padding-bottom: $sm;
 }
 
+.subtitle-section{
+  margin: $sm 0 $sm;
+  font-size: 1rem;
+  color: $dark;
+  padding-bottom: $sm;}
+
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// Buttons
@@ -178,6 +179,15 @@ body{ padding-bottom: $lg; min-width: 320px;}
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// FORMS
+/// 
+.form-section{
+  background-color: $white;
+  padding: $md;
+  border-radius: $border-radius;
+  border:1px solid $gray1;
+  margin-bottom: $md;
+
+}
 
 .input-label{
   display: block;
@@ -196,6 +206,10 @@ body{ padding-bottom: $lg; min-width: 320px;}
   display: block;
 }
 
+.input-label input::placeholder{
+  font-weight: 400;
+  color: $gray2;
+}
 .input-label .input-text{
   display: block;
   box-sizing: border-box;
@@ -203,7 +217,7 @@ body{ padding-bottom: $lg; min-width: 320px;}
   padding: $md;
   border-radius: $border-radius;
   border:1px solid $gray3;
-  color: $gray3;
+  color: $dark;
   font-weight: bold;
   font-size: 1rem;
 }
@@ -223,12 +237,73 @@ body{ padding-bottom: $lg; min-width: 320px;}
   padding: $md;
   border-radius: $border-radius;
   border:1px solid $gray3;
-  color: $gray3;
+  color: $dark;
   font-weight: bold;
   font-size: 1rem;
 }
+.input-label .input-select option{color: $dark;
+  font-weight: bold;}
+
+// checkbox group
+
+.input-label.checkbox-group .checkbox-line{
+  display: block;
+  padding: $sm 0;
+  color: $darken;
+  font-size: 0.9rem;
+}
+.input-label.checkbox-group .checkbox-line .inputCheck{
+  width: 20px;
+  height: 20px;
+  border-radius: $border-radius;
+  border: 1px solid $gray3;
+  background-color: $white;
+  margin-right: $sm;
+}
+
+.input-label.checkbox-group .checkbox-line .inputCheck:checked{
+  border-color: $lightGreen;
+}
+
+.input-autocomplete-box{
+  position: relative;
+
+}
+.input-autocomplete-box .autoCompleteList{
+  position: absolute;
+  top: 69px;
+  left: 0; right: 0;
+  width: 100%; box-sizing: border-box;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
+  border: 1px solid $dark;
+  border-top: none;
+  border-radius: 0 0 $sm $sm;
+  z-index: 100;
+  display: none;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.input-autocomplete-box .autoCompleteList.visible{ display: block;}
+.input-autocomplete-box .autoCompleteList li{ 
+  padding: $sm;
+  font-weight: 400;
+  color: $dark;
+border-bottom: 1px solid $gray1;}
+.input-autocomplete-box .autoCompleteList li.hide{ display: none;}
 
 
+.read-field-value{
+  display: block;
+  padding: $md 0;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: $purple;
+}
+.read-field-value.money{
+  text-align: right;
+}
 
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
@@ -348,7 +423,21 @@ body{ padding-bottom: $lg; min-width: 320px;}
   padding-bottom: $sm;
   font-weight: 400;
 }
+.table-list li .li-container .li-container-label .product-name{
+  padding: $sm 0;
+}
+.table-list li .li-container .li-container-label .product-name .product-price{
+  float: right;
+}
 
+.table-list-right-side{
+  float: right;
+}
+.table-list-currency{
+  font-weight: 400;
+  color: $purple;
+  margin-right: $md;
+}
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// Confirm Dialog
@@ -400,3 +489,13 @@ body{ padding-bottom: $lg; min-width: 320px;}
   top: 50%;
   margin: -20px 0 0 -20px;
 }
+
+.fundsDisplay{ float: right; margin-right: $md;}
+
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+/// Block Page Loader
+.product-register-box{}
+
+

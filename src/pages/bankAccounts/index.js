@@ -1,15 +1,34 @@
 import React, { useEffect, useState } from "react";
 
 import { serverTimestamp } from "firebase/firestore"
-import { addBankAccount, getAccountsCatalog, deletBankAccount, getPaymentsCatalog, getCurrecyCatalog } from "../../firebase/accounts";
+import { addBankAccount, getAccountsCatalog, deletBankAccount, getPaymentsCatalog, getCurrecyCatalog, getAccountMovments } from "../../firebase/accounts";
 import CheckBoxGroups from "../../components/forms/checkboxes";
+
+import PageBox from "../../components/elements/pageBox";
+import PageTitle from "../../components/elements/texts/pageTitle";
+import SectionTitle from "../../components/elements/texts/sectionTitle";
+import Input from "../../components/forms/input";
 import SelectBox from "../../components/forms/select";
+import PrimaryButton from "../../components/elements/buttons/primaryButton";
+import Alert from "../../components/elements/messages/alert";
+import Loader from "../../components/elements/loader";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faX } from '@fortawesome/free-solid-svg-icons'
+import ConfirmDialog from "../../components/elements/messages/confirm";
+import { defineCurrencySymbols } from "../../tools/moneyTools";
+import { getDate } from "../../tools/dateTools";
+import { formatValueTo2Digit } from "../../tools/mathTools";
+import { Link} from "react-router-dom";
 
 function BankAccounts(){
 
+    /* ############################# */
+    // Catalogs
     const [accountsCatalog, setAccountsCatalog] = useState(undefined);
-    const [paymentsCatalog, setPaymentsCatalog] = useState(undefined);
-    const [currencyCatalog, setCurrencyCatalog] = useState(undefined)
+    const [payOptions, setPayOptions] = useState(undefined);
+    
+    const [currencyCatalog, setCurrencyCatalog] = useState(undefined);
+
     /* ############################# */
     // Account Constants
     const [bankName, setBankName] = useState("");
@@ -21,9 +40,8 @@ function BankAccounts(){
     
     /* ############################# */
     // Interface constants
-    const [payOptions, setPayOptions] = useState(undefined);
     const [currencyOptions, setCurrencyOptions] = useState(undefined);
-    const [listBankAccounts, setListBankAccounts] = useState(undefined);
+    const [listBankAccounts, setListBankAccounts] = useState(<Loader />);
 
     const newBankAccount = {
         Name: bankName,
@@ -34,42 +52,21 @@ function BankAccounts(){
         PaymentMethods: bankPaymentsMethods,
         Status: bankStatus,
         CreatedAt: serverTimestamp()
-    }
-    /* ############################# */
-    // Add an account
-    function createAccount(){
+    };
 
-        addBankAccount(newBankAccount).then((res) => {
-            window.location.href = "/bankaccounts"
-        })
-    }
+    //////////////////////
+    // messages
+    const [returningAlerts, setReturningAlerts] = useState("");
+
 
     /* ############################# */
-    // Payment Methods     
-    function checksClick(data){
-        console.log(data, bankPaymentsMethods)
-        if(bankPaymentsMethods.includes(data)){
-            console.log("includes", data, bankPaymentsMethods)
-            let removal = bankPaymentsMethods.indexOf(data);
-            bankPaymentsMethods.splice(removal, 1);
-        } else {
-            console.log("not includes", bankPaymentsMethods)
-            bankPaymentsMethods.push(data)
-        }
-        console.log("result", bankPaymentsMethods)
-    }
-
-    /* ############################# */
-    // Get Bank Accounts
+    // Get Catalogs
     const firstLoad = useEffect(() => {
         getAccountsCatalog().then( (res) => {
             setAccountsCatalog(res);
-            console.log(res)
         });
-
         getPaymentsCatalog().then((res) => {
-            console.log(res)
-            setPaymentsCatalog(res)
+            setPayOptions(res)
         })        
         getCurrecyCatalog().then( (res) => {
             setCurrencyCatalog(res)
@@ -77,63 +74,177 @@ function BankAccounts(){
     }, []);
 
     const updateAccountCatalog = useEffect(() => {
+        pageDraw();
+    }, [accountsCatalog]);
+
+    /* ############################# */
+    // Draw page
+    function pageDraw(){
         if(accountsCatalog){
             setListBankAccounts(
                 accountsCatalog.map( (key, i) => (
                     <li key={i}>
                         {key.Name}
-                        {key.Currency}
-                        {key.CurrencySymbol}
-                        {key.InitialDeposit}
-                        {key.CurrentFunds}
-                        {key.PaymentMethods}
-                        {key.Status}
-                        {Date(key.CreatedAt)}
-                        <i onClick={ () => { 
-                            deletBankAccount(key.id).then( (res) => {
-                                setAccountsCatalog(res);
-                            }) } }>X</i>
+                        
+
+                        <span 
+                            className="delete-item-list" 
+                            onClick={ () => { 
+                                setReturningAlerts(
+                                    <ConfirmDialog 
+                                        message="Do you realy want to delete this subcategory?"
+                                        onConfirmHandler={() => { 
+                                            deleteBankAccountCall(key.id)
+                                        }}
+                                        onDenyHandle={denyDelete}
+                                        />)
+                                }}>
+                            <FontAwesomeIcon icon={faX} />
+                        </span>
+
+                        <span className="fundsDisplay">
+                            {key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds) }
+                        </span>
+
+                        <div className="li-container">
+                            <span className="li-container-label">
+                                <strong>Curerncy:</strong> <br/>
+                                {key.Currency} | {key.CurrencySymbol}
+                            </span>
+                            <span className="li-container-label">
+                                <strong>Initial Deposit:</strong> <br/>
+                                {key.InitialDeposit}
+                            </span>
+                            <span className="li-container-label">
+                                <strong>Payment Methods:</strong> <br/>
+                                {key.PaymentMethods.forEach( key => key)}
+                            </span>
+                            <span className="li-container-label">
+                                <strong>Opening Date:</strong> <br/>
+                                {getDate(key.CreatedAt)}
+                            </span>
+                            <Link to={"/bankaccounts/movements?accountId="+key.id}>Check movements</Link>
+                        </div>
+                        
                     </li>
                 ))
-            );
-            setPayOptions(paymentsCatalog);
-            
+            );            
         }
-    }, [accountsCatalog, currencyCatalog, paymentsCatalog]);
+    }
+
+    /* ############################# */
+    // Delet account
+    function deleteBankAccountCall(id){
+        deletBankAccount(id).then( 
+            (response) => {
+                setReturningAlerts(
+                    <Alert
+                        message={response.message}
+                        classes={response.classes}
+                        display={response.display}
+                        />
+                );
+                if( response.classes != "error" && response.classes != "warning"){
+                    getAccountsCatalog().then( (res) => {
+                        setAccountsCatalog(res);
+                    })
+                }
+            })
+    } 
+    
+
+    function denyDelete(){
+        setReturningAlerts(null);
+    }
+
+    /* ############################# */
+    // Payment Methods     
+    function checksClick(data){
+        if(bankPaymentsMethods.includes(data)){
+            let removal = bankPaymentsMethods.indexOf(data);
+            bankPaymentsMethods.splice(removal, 1);
+        } else {
+            bankPaymentsMethods.push(data)
+        }
+    }
+
+    
+
+    
 
     const currencySet = useEffect( () => {
         setCurrencyOptions(currencyCatalog);
     }, [currencyCatalog])
 
-function show(){
-    console.log(newBankAccount)
-}
     return(
         <>
-            Bank Accounts
-            <button onClick={show}>Show</button>
-            <div className="addBankAccount">
-                Bank: <input type="text" value={bankName} onChange={ (e) => { setBankName(e.target.value) } } />
-                Initial Deposit: <input type="number" value={initialDeposit} onChange={ (e) => { setInitialDeposit(Number(e.target.value)) } } /> 
-                Currency: 
+            <PageTitle text="Accounts" />
+            <PageBox>
+                <SectionTitle text="Add a new account" />
+
+                <Input 
+                    type="text"
+                    label="Account name:"
+                    placeholder="Insert a name"
+                    value={bankName} 
+                    onChangeHandler={(result) => { 
+                        setBankName(result) ;
+                    }}
+                    />
+
+                <Input 
+                    type="number"
+                    label="Initial Deposit:"
+                    placeholder="Insert a name"
+                    value={initialDeposit} 
+                    onChangeHandler={(result) => { 
+                        setInitialDeposit(Number(result))
+                    }}
+                    />
+
                 <SelectBox
                     options={currencyOptions}
-                    onChangeHandler={(res) => { setBankCurrency(res) }} />
+                    id="currencyOptions"
+                    label="Select a currency"
+                    onChangeHandler={(res) => { 
+                        setBankCurrency(res) 
+                        setBankCurrencySymbol(defineCurrencySymbols(res))
+                    }} />
                 
-                PaymentMethods:
-                <div className="paymethodsOptions">
-                    <CheckBoxGroups
-                        id="ckGroup_1"
-                        data={payOptions}
-                        OnClickHandler={res => checksClick(res)} />
+                <CheckBoxGroups
+                    label="Payment Methods:"
+                    id="ckGroup_1"
+                    data={payOptions}
+                    OnClickHandler={res => checksClick(res)} />
 
-                </div>
-            </div>
-            <button onClick={createAccount}>Save</button>
-            <h2>Avaliable Bank Accounts</h2>
-            <ul>
-                {listBankAccounts}
-            </ul>
+                <PrimaryButton
+                    label="Add New Account"
+                    onClickHandler={() => { 
+                        setReturningAlerts(<Loader type="fullscreen" /> )
+                        setListBankAccounts(<Loader />)
+                        addBankAccount(newBankAccount).then(
+                            (response) => {
+                                setReturningAlerts(
+                                    <Alert
+                                        message={response.message}
+                                        classes={response.classes}
+                                        display={response.display}
+                                        />
+                                );
+                                getAccountsCatalog().then( (res) => {
+                                    setAccountsCatalog(res);
+                                })
+                            })                        
+                        }} /> 
+            </PageBox>
+               
+            <PageBox>
+                <SectionTitle text="Avaliable accounts" />
+                <ul className="table-list">
+                    {listBankAccounts}
+                </ul>
+            </PageBox>
+            {returningAlerts}    
         </>
     )
 }

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
+import { returnMessage } from "../tools/alertTools";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -41,6 +42,28 @@ const colRef = collection(db, collectionRef);
     */
 
 /* ################################## */
+// GET CATALOG
+// Return a list of all existing bank accounts
+/* ########################## */
+export async function getAccountsCatalog(){
+    let bankCatalog = [];
+    const queryList = query(collection(db, collectionRef), orderBy('Name', 'asc')) 
+    await getDocs(queryList).then( 
+        (snapshot) => {
+            snapshot.docs.forEach( (doc) => {
+                if(doc.data().Status === true){
+                    bankCatalog.push( {...doc.data(), id: doc.id} )
+                }
+            });        
+    }).catch( (err) => {
+        console.error(err)
+    });
+    return bankCatalog;
+}
+
+
+
+/* ################################## */
 // GET PAYMENT OPTIONS
 // Return the default list of payment options
 /* ########################## */
@@ -75,44 +98,44 @@ export async function getCurrecyCatalog(){
 // Create a Bank Account
 /* ########################## */
 export async function addBankAccount(data){
+    let response;
     await addDoc(colRef, data).then(() => {
+        response = returnMessage("New account created")
         console.log("New Bank Created");        
-    }).catch( err => console.log(err))
+    }).catch( (err) => { 
+        console.error(err)
+        response = returnMessage("Fail to create account", "error")
+    })
+    return response
 }
 
-/* ################################## */
-// GET CATALOG
-// Return a list of all existing bank accounts
-/* ########################## */
-export async function getAccountsCatalog(){
-    let bankCatalog = []
-    const queryList = query(collection(db, collectionRef), orderBy('Name', 'asc')) 
-    await getDocs(queryList).then( (snapshot) => {
-        snapshot.docs.forEach( (doc) => {
-            if(doc.data().Status === true){
-                bankCatalog.push( {...doc.data(), id: doc.id} )
-            }
-        });        
-    }).catch( (err) => {
-        console.log("err")
-    });
-    return bankCatalog;
-}
+
 
 /* ################################## */
 // DELETE BANK ACCOUNT
 // Deletes a bank account and returns a new catalog
 /* ########################## */
 export async function deletBankAccount(id){
-        const docRef = doc(db, collectionRef, id);
-        await deleteDoc(docRef)
-            .then( () => {
-                console.log("Bank Account Deleted");
-
-                return getAccountsCatalog();
-                
-            }).catch( (err) => console.log(err))
-    }
+    let response;
+    await getAccountMovments(id).then(
+        async (res) => {
+            if(res != null && res.length > 0){
+                console.log("not del", res);
+                response = returnMessage("Account can not be deleted because there are movments on it.", "warning");
+            } else {
+                console.log("del", res);
+                const docRef = doc(db, collectionRef, id);
+                await deleteDoc(docRef)
+                    .then( (res) => {
+                        console.log("Bank Account Deleted");
+                        response = returnMessage("Account deleted.");
+                    }).catch( (err) => console.log(err))
+            }
+        }
+    )
+    console.log("final respo", response)
+    return response;
+}
 
 
     
@@ -157,4 +180,28 @@ export async function addBankExpense(bankId, expenseData){
 
         }).catch( err => console.log(err))
     
+}
+
+
+/* ################################## */
+// Get Bank account movments
+// returns the movments of a bank account
+/* ########################## */
+export async function getAccountMovments(bankId){
+    let response;
+    ////////////////////////
+    // Add Debit Movment Registration
+    let ref = collection(db, collectionRef, bankId, "balance");
+    await getDocs(ref)
+        .then((snapshot) => {
+            response = [];
+            snapshot.docs.forEach( (doc) => {
+                response.push( {...doc.data(), id: doc.id} )
+            });   
+        }).catch( 
+            (err) => {
+                console.log(err);
+                response = null
+        })
+    return response;
 }

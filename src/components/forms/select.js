@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState, forwardRef  } from "react";
 
 
 function SelectBox(props){
@@ -6,6 +6,8 @@ function SelectBox(props){
     const waiter = <option>Wait...</option>;
     const selectOptions = [];
     const [id, setId] = useState(props.id);
+
+    const selectRef = useRef()
     
     let classes = "input-select ";
     if(props.classes) classes = classes+props.classes;
@@ -15,15 +17,19 @@ function SelectBox(props){
     }
 
     if(props.options !== undefined ){
-        props.options.forEach(key => {
+        let defineOptions;
+        if(typeof props.options === "string"){
+            defineOptions = [props.options]
+        }  else {
+            defineOptions = props.options
+        }
+        defineOptions.forEach(key => {
             selectOptions.push(key)
         });
     } else {
-        console.error("Props options is undefined, its not an array or istn loaded yet")
+        console.warn("Props options is undefined, or its not an array or it was not loaded yet")
     } 
-    
-    
-    
+
 
     return(
         <label className="input-label select-input">
@@ -31,6 +37,7 @@ function SelectBox(props){
             <select 
                 className={classes}
                 id={id}
+                ref={selectRef}
                 value={props.value}
                 onChange={ (e) => { 
                    props.onChangeHandler(e.target.value)

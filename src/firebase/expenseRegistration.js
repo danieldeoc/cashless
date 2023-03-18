@@ -23,13 +23,35 @@ const db = getFirestore();
 // Adds a new expense register to the general list
 /* ########################## */
 export async function expenseRegistration(data){
-    await addDoc(collection(db, collectionRef) , data)
-        .then((res) => {
-            return res;            
-        }).catch( err => console.log(err))
+    const docRef = await addDoc(collection(db, collectionRef), data);
+    return docRef.id;
 }
 
 
+/* ################################## */
+// DELETE EXPENSE
+// Delets the last expense
+/* ########################## */
+export async function deleteExpense(id){
+    let result;
+
+   // const expense = getExpenseDetail(id);
+
+   // console.log(expense)
+
+    // delete product price history
+    // delete bank account movment
+    // delete expense register    
+
+    return result;
+}
+
+/* ################################## */
+// EXPENSE DETAIL
+// GET A SINGLE EXPENSE DETAIL
+/* ########################## */
+
+//getExpenseDetail
 
 
 /* ################################## */
@@ -39,12 +61,9 @@ export async function expenseRegistration(data){
 export async function getExpensesCatalog(queryOptions){
     const expensesCatalog = [];
     let querySettings;
-    console.log(queryOptions)
     if(queryOptions === undefined || queryOptions === "default"){
-        console.log("bei")
-        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc')) 
+        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'desc')) 
     } else {
-        console.log("ei")
         querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc'), where(queryOptions.field, queryOptions.operator, queryOptions.criteria));
     }
     await getDocs(querySettings)

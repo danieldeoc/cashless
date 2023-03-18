@@ -1,13 +1,24 @@
-import React, { useEffect, useState, useContext, createContext, useRef } from "react";
+import React, { useEffect, useState, useContext, createContext, useRef, useCallback } from "react";
 import { ExpenseContext}  from '../index.js';
-import { randomNumber,productTotalPrice } from "../../../tools/mathTools.js";
+import { randomNumber,productTotalPrice, formatValueTo2Digit } from "../../../tools/mathTools.js";
 
 import InputAutoComplete from "../../../components/forms/inputAutocomplet";
-import Input from "../../../components/forms/input";
-import UnitSelect from "./unitySelect.js";
+
+
 import CategoryFields from "./categorySelects.js";
 
 import { serverTimestamp } from "firebase/firestore";
+
+import PageBox from "../../../components/elements/pageBox.js";
+import PageTitle from "../../../components/elements/texts/pageTitle";
+import SectionTitle from "../../../components/elements/texts/sectionTitle";
+import Input from "../../../components/forms/input";
+import SelectBox from "../../../components/forms/select";
+import PrimaryButton from "../../../components/elements/buttons/primaryButton";
+import Alert from "../../../components/elements/messages/alert";
+import Loader from "../../../components/elements/loader";
+import FormSection from "../../../components/forms/formSection.js";
+import SubTitle from "../../../components/elements/texts/subTitle.js";
 
 
 export const ProductContext = createContext();
@@ -26,39 +37,32 @@ function ProductAddOn(props){
     const { purchaseProductList, setPurchaseProductList} = useContext(ExpenseContext);
     const { expenseBankCurrency } = useContext(ExpenseContext);
 
-    const [selectedProduct, setSelectedProduct] = useState(undefined)
+    const {expenseStore, setExpenseStore} = useContext(ExpenseContext);
+
+   
     
     /* ################################# */
     // New Expense Constant
-    const [tempId, setTempId] = useState(null);
-
+    const [tempId, setTempId] = useState(randomNumber(1000000));
     const [expenseId, setExpenseId] = useState(undefined); // document ID
-    const [expenseName, setExpenseName] = useState(undefined);
+    const [expenseName, setExpenseName] = useState("");
     const [expenseCategory, setExpenseCategory] = useState(undefined);
     const [expenseSubCategory, setExpenseSubCategory] = useState(undefined);
-
-    const [expenseAmmount, setExpenseAmmount] = useState(1);
-    const [expenseAmmountType, setExpenseAmmountType] = useState(undefined);
-
+    const [expenseAmount, setExpenseAmount] = useState(1);
+    const [expenseAmountType, setExpenseAmountType] = useState(undefined);
     const [expensePrice, setExpensePrice] = useState(0.00);
     const [expenseLastPrice, setExpenseLastPrice] = useState(0.00);
     const [expenseAveragePrice, setExpenseAveragePrice] = useState(0.00);
-    const [expenseTotalPrice, setExpenseTotalPrice] = useState(0.00);
-
-    const [expenseStore, setExpenseStore] = useState(undefined)
-    
+    const [expenseTotalPrice, setExpenseTotalPrice] = useState(0.00);    
     const [creationDate, setCreationDate] = useState(serverTimestamp());
 
-    const productGlobals = { selectedProduct, setSelectedProduct }
+    const productGlobals = { expenseName, setExpenseName }
 
-    //////////////////////////////
-    // First render and load of information
-    const firstRender = useEffect( () => {
-        if(newProductRegister.listId === null){
-            let temp = randomNumber(1000000);
-            setTempId(temp)
-        }
-    }, [productsCatalog])
+    
+
+    const [categoriesOptions, setCategoriesOptions] = useState(undefined);
+    const [subCategoriesOptions, setSubCategoriesOptions] = useState(undefined);
+
 
     ///////
     // new product object
@@ -69,16 +73,15 @@ function ProductAddOn(props){
         Category: expenseCategory,
         Subcategory: expenseSubCategory, 
 
-        Amount:  Number(expenseAmmount),
-        AmountType: expenseAmmountType,
+        Amount:  Number(expenseAmount),
+        AmountType: expenseAmountType,
 
         Price: Number(expensePrice),
         TotalPrice: expenseTotalPrice,
         LastPrice: expenseLastPrice,
         AveragePrice: expenseAveragePrice,
 
-        CreatedAt: creationDate,
-        Store: expenseStore
+        CreatedAt: creationDate
     }
     
     ///////////////////////////////////////
@@ -87,7 +90,6 @@ function ProductAddOn(props){
         if( newProductRegister.listId != null){
             const purchaseIndex = purchaseProductList.findIndex( ({listId}) => listId == tempId );
             if(purchaseIndex == -1){
-                console.log("added register")
                 purchaseProductList.push(newProductRegister)
             } else {
                 let productList = purchaseProductList;
@@ -95,28 +97,35 @@ function ProductAddOn(props){
                 setPurchaseProductList(productList)
             }
         }
-    }, [expenseName, expenseCategory, expenseSubCategory, expenseAmmountType, expenseAmmount, expensePrice, expenseTotalPrice ])
+    }, [expenseName, expenseCategory, expenseSubCategory, expenseAmountType, expenseAmount, expensePrice, expenseTotalPrice ])
     
 
 
     ///////////////////////////////
     // updates a info in the catalog
-    const catalogAutoComplete = useEffect( () => {
+    const autoCompleteWithList = useEffect( () => {
         if(productsCatalog){
             let product = productsCatalog.find( ({Name}) => Name == expenseName);        
             if(product !== undefined){ // produc exist, so, get data from catalog
-                console.log("prod", product)
                 setExpenseId(product.id)
                 setExpenseCategory(product.Category)
-                setExpenseSubCategory(product.Subcategory)            
-                setExpenseAmmountType(product.AmmountType)   
-                setExpenseLastPrice(product.LastPrice)
-                setExpensePrice(product.LastPrice)
-                setCreationDate(product.CreatedAt);
-                setSelectedProduct(product);
+                drawSubCategoryOptions(product.Category, product.Subcategory)
+                          
+                let amount = product.AmountType;
+                setExpenseAmountType(amount)  
+                document.getElementById("amountType"+tempId).value = amount;
+    
+                setCreationDate(product.CreatedAt);      
+                
+                let price = formatValueTo2Digit(product.LastPrice)
+                setExpenseLastPrice(Number(price))
+                setExpensePrice(Number(price))
+                document.getElementById("price"+tempId).value = price;
             } 
         }
+
     }, [expenseName])
+
 
 
     //////////////////////////
@@ -127,15 +136,15 @@ function ProductAddOn(props){
     
     const initialAmmount = useEffect( () => {
         if(unitsCatalog !== undefined){
-            setExpenseAmmountType(unitsCatalog[0])
+            setExpenseAmountType(unitsCatalog[0])
         }
     }, [unitsCatalog])
 
     const priceConstants = useEffect(() => {
         let price = Number(expensePrice);
-        let ammount = Number(expenseAmmount);
+        let ammount = Number(expenseAmount);
         setExpenseTotalPrice(productTotalPrice(price, ammount));
-    }, [expensePrice, expenseAmmount])
+    }, [expensePrice, expenseAmount])
     
     
     ////////////////////////////////////
@@ -145,51 +154,102 @@ function ProductAddOn(props){
         if(categoryCatalog){
             setExpenseCategory(categoryCatalog[0].Name);
             setExpenseSubCategory(categoryCatalog[0].Childs);
+            drawSubCategoryOptions(categoryCatalog[0].Name)
         }
 
     }, [categoryCatalog])
 
+     ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+    // Page Updates
+    ////////////////////////////////////////////////
+    
+    function drawSubCategoryOptions(category, subcategory, catalog){
+        let subCats = categoryCatalog.find( ({Name}) => Name == category);
+        setCategoriesOptions(
+            categoryCatalog.map( (key, i) => (
+                key.Name
+                ))
+            );
+
+        const childs = subCats.Childs;
+        if( childs == ""){
+            setExpenseSubCategory("")
+            setSubCategoriesOptions([""])
+        } else {    
+            setSubCategoriesOptions(
+                childs.map( key => key)
+            )
+            setTimeout(() => {
+                if( subcategory){
+                    setExpenseSubCategory(subcategory)
+                } else {
+                    setExpenseSubCategory(childs[0])
+                }
+            }, 300)
+        }
+    }
     
 
-    
+    const subTitleText = `Product: ${expenseName}`;
     ///////////////////////
     // INTERFACE
     return(
         <ProductContext.Provider value={productGlobals}>
-            <blockquote>
-                <h3>Product</h3>
-                
+            
+            <FormSection>
+                <SubTitle text={subTitleText} />
                 <InputAutoComplete 
                     value={expenseName}
                     onChangeHandler={ (key) => { 
                         setExpenseName(key);                                    
                     }} />
+
+
+                <SelectBox 
+                    label="Select a category"
+                    value={expenseCategory}
+                    onChangeHandler={ (result) => { 
+                        setExpenseCategory(result)
+                        drawSubCategoryOptions(result)
+                    }}
+                    classes="category-select"
+                    options={categoriesOptions}
+                    />
                 
-                <CategoryFields 
-                    expenseName={expenseName} // when this var changes, its needed o change the states
-                    onChangeHandler={ (category, subCategory) => { 
-                        setExpenseCategory(category)
-                        setExpenseSubCategory(subCategory)
-                     }} />
+                <SelectBox 
+                    label="Select a subcategory"
+                    value={expenseSubCategory}
+                    onChangeHandler={ (result) => { 
+                        setExpenseSubCategory(result)
+                    }}
+                    classes="category-select"
+                    options={subCategoriesOptions}
+                    />  
                 
                 <Input
-                    id="ammount"
-                    label="Ammount:"
+                    id="amount"
+                    label="Amount:"
                     type="number"
                     steps="0.010"
-                    value={expenseAmmount}
+                    value={expenseAmount}
                     onChangeHandler={ (key) => { 
-                        setExpenseAmmount(key) 
+                        setExpenseAmount(key) 
                     }}
                     />
 
-                <UnitSelect
-                    onChangeHandler={ (value) => { setExpenseAmmountType(value) } } />
-                    | 
+                <SelectBox 
+                    id={"amountType"+tempId}
+                    label="Select an amount type"
+                    onChangeHandler={ (result) => { 
+                        setExpenseAmountType(result)
+                    }}
+                    options={unitsCatalog}
+                    />
                 
                 <Input
-                    id="price"
-                    label="Price per unit: "
+                    id={"price"+tempId}
+                    label={"Price per "+expenseAmountType}
                     value={expensePrice}
                     type="number"
                     steps="0.10"
@@ -197,13 +257,13 @@ function ProductAddOn(props){
                         setExpensePrice(key);
                         setExpenseLastPrice( Number(key) )
                     }}
-                    /> {expenseBankCurrency}
+                    /> 
 
-                    <span>
+                    <div className="read-field-value money">
                          {expenseTotalPrice} {expenseBankCurrency}
-                    </span>
-                
-            </blockquote>
+                    </div>
+            </FormSection> 
+            
         </ProductContext.Provider>
     )   
 }

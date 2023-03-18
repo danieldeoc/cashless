@@ -1,26 +1,29 @@
 import React from "react";
+import Loader from "../../elements/loader";
 
 function CheckBoxGroups(props){
     if(props.data){
         var i = 0;
         var listChecks = props.data.map( (data, i) => (
-            <label key={i}>
+            <div className="checkbox-line" key={i}>
                 <input 
+                    className="inputCheck"
                     id={props.id+"_"+props.data} 
                     type="checkbox" 
                     onClick={() => {
                         props.OnClickHandler(data)
                     }} />
                     {data}
-            </label>
+            </div>
         ));
     } else {
-        var listChecks = "loading...";
+        var listChecks = <Loader />;
     }
     return(
-        <>
+        <label className="input-label checkbox-group">
+            <span className="label-title"> {props.label}</span>
             {listChecks}
-        </>
+        </label>
     )
 }
 

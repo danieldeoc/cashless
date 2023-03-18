@@ -34,7 +34,7 @@ export function productTotalPrice(priceValue, ammountValue){
     let price = Number( priceValue);
     let ammount = Number(ammountValue);
     let result = price * ammount;
-    return result;
+    return Number(formatValueTo2Digit(result));
 }
 
 
