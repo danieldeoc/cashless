@@ -25,7 +25,7 @@ const colRef = collection(db, collectionRef);
 // Get Categories Catalog
 /* ########################## */
 export async function getCategoriesCatalog(){
-    const categories = []; 
+    let categories = []; 
     const queryList = query(collection(db, collectionRef), orderBy('Name', 'asc')) 
     await getDocs(queryList).then( (snapshot) => {              
         snapshot.docs.forEach((doc) => {
@@ -33,7 +33,13 @@ export async function getCategoriesCatalog(){
         })
     }).catch( (err) => {
         console.log("err")
-    });
+    }).finally(
+        () => {
+            if(categories.length == 0){
+                categories = ["No categories registered yet"]
+            }  
+        }
+    );
     return categories;
 }
 

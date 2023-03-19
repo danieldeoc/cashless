@@ -81,54 +81,66 @@ function BankAccounts(){
     // Draw page
     function pageDraw(){
         if(accountsCatalog){
-            setListBankAccounts(
-                accountsCatalog.map( (key, i) => (
-                    <li key={i}>
-                        {key.Name}
-                        
+            if(accountsCatalog[0] == "No accounts registered yet"){
+                setListBankAccounts(
+                    accountsCatalog.map( (key, i) => (
+                        <li className="empty-list">
+                            {key}
+                        </li>
+                        )
+                    )
+                )
+            } else {
 
-                        <span 
-                            className="delete-item-list" 
-                            onClick={ () => { 
-                                setReturningAlerts(
-                                    <ConfirmDialog 
-                                        message="Do you realy want to delete this subcategory?"
-                                        onConfirmHandler={() => { 
-                                            deleteBankAccountCall(key.id)
-                                        }}
-                                        onDenyHandle={denyDelete}
-                                        />)
-                                }}>
-                            <FontAwesomeIcon icon={faX} />
-                        </span>
-
-                        <span className="fundsDisplay">
-                            {key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds) }
-                        </span>
-
-                        <div className="li-container">
-                            <span className="li-container-label">
-                                <strong>Curerncy:</strong> <br/>
-                                {key.Currency} | {key.CurrencySymbol}
+                setListBankAccounts(
+                    accountsCatalog.map( (key, i) => (
+                        <li key={i}>
+                            {key.Name}
+                            
+    
+                            <span 
+                                className="delete-item-list" 
+                                onClick={ () => { 
+                                    setReturningAlerts(
+                                        <ConfirmDialog 
+                                            message="Do you realy want to delete this subcategory?"
+                                            onConfirmHandler={() => { 
+                                                deleteBankAccountCall(key.id)
+                                            }}
+                                            onDenyHandle={denyDelete}
+                                            />)
+                                    }}>
+                                <FontAwesomeIcon icon={faX} />
                             </span>
-                            <span className="li-container-label">
-                                <strong>Initial Deposit:</strong> <br/>
-                                {key.InitialDeposit}
+    
+                            <span className="fundsDisplay">
+                                {key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds) }
                             </span>
-                            <span className="li-container-label">
-                                <strong>Payment Methods:</strong> <br/>
-                                {key.PaymentMethods.forEach( key => key)}
-                            </span>
-                            <span className="li-container-label">
-                                <strong>Opening Date:</strong> <br/>
-                                {getDate(key.CreatedAt)}
-                            </span>
-                            <Link to={"/bankaccounts/movements?accountId="+key.id}>Check movements</Link>
-                        </div>
-                        
-                    </li>
-                ))
-            );            
+    
+                            <div className="li-container">
+                                <span className="li-container-label">
+                                    <strong>Curerncy:</strong> <br/>
+                                    {key.Currency} | {key.CurrencySymbol}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Initial Deposit:</strong> <br/>
+                                    {key.InitialDeposit}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Payment Methods:</strong> <br/>
+                                    {key.PaymentMethods.forEach( key => key)}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Opening Date:</strong> <br/>
+                                    {getDate(key.CreatedAt)}
+                                </span>
+                                <Link to={"/bankaccounts/movements?accountId="+key.id}>Check movements</Link>
+                            </div>
+                            
+                        </li>
+                    ))
+                );            
+            }
         }
     }
 

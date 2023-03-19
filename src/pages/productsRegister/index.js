@@ -159,49 +159,59 @@ function ProductsCatalog(){
 
     function drawPageList(){
         if(productsCatalog !== undefined){
-            
-            setProductCatalogList(
-                productsCatalog.map((key, i) => (
-                    <li key={i}>
-                        {key.Name}
+            if(productsCatalog[0] == "No products rsgitered yet."){
+                setProductCatalogList(
+                    productsCatalog.map( (key, i) => ( 
+                        <li key={i} className="empty-list">  
+                            {key}
+                        </li>
+                    ))
+                )
+            } else {
 
-                        <span 
-                            className="delete-item-list" 
-                            onClick={ () => {
-                                setReturningAlerts(
-                                    <ConfirmDialog 
-                                        message="Do you realy want to delete this product from the catalog?"
-                                        onConfirmHandler={(event) => { confirmeProductDelete(key.id) }}
-                                        onDenyHandle={denyDelete}
-                                        />)
-                                }}>
-                            <FontAwesomeIcon icon={faX} />
-                        </span>
-
-                        <div className="li-container">
-                            <span className="li-container-label">
-                                <strong>Category:</strong> <br/>
-                                {key.Category}
+                setProductCatalogList(
+                    productsCatalog.map((key, i) => (
+                        <li key={i}>
+                            {key.Name}
+    
+                            <span 
+                                className="delete-item-list" 
+                                onClick={ () => {
+                                    setReturningAlerts(
+                                        <ConfirmDialog 
+                                            message="Do you realy want to delete this product from the catalog?"
+                                            onConfirmHandler={(event) => { confirmeProductDelete(key.id) }}
+                                            onDenyHandle={denyDelete}
+                                            />)
+                                    }}>
+                                <FontAwesomeIcon icon={faX} />
                             </span>
-                            <span className="li-container-label">
-                                <strong>Sub-category:</strong><br/>
-                                {key.Subcategory}
-                            </span>
-                            <span className="li-container-label">
-                                <strong>Ammount type:</strong> <br/>
-                                {key.AmountType}
-                            </span>
-                            <span className="li-container-label">
-                                <strong>Created at:</strong><br/>
-                                 {getDate(key.CreatedAt)}
-                            </span>
-
-                            {checkPriceHistory(key.id)}
-                        </div>
-
-                    </li>
-                ))
-            )               
+    
+                            <div className="li-container">
+                                <span className="li-container-label">
+                                    <strong>Category:</strong> <br/>
+                                    {key.Category}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Sub-category:</strong><br/>
+                                    {key.Subcategory}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Ammount type:</strong> <br/>
+                                    {key.AmountType}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Created at:</strong><br/>
+                                     {getDate(key.CreatedAt)}
+                                </span>
+    
+                                {checkPriceHistory(key.id)}
+                            </div>
+    
+                        </li>
+                    ))
+                )               
+            }
         }
     }  
     

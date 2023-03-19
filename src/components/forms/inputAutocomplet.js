@@ -103,8 +103,8 @@ function InputAutoComplete(props){
             <Input 
                 id={inputId}
                 type="text"
-                label="Category name:"
-                placeholder="Insert a name"
+                label={props.label}
+                placeholder={props.placeholder}
                 value={inputValue}
                 onChangeHandler={ (result) => { 
                     setInputValue(result);

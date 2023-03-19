@@ -3,8 +3,8 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.83 - expense, products anda accounts empty result list bug fix, autocomplete bug fixes, empty screen added for no categories or accounts setted, expense delte process added (deletes expense, deletes bank account movment and updates balance, deletes product history price register)
 - 0.0.82 - expense screen interface added, code bugs fixed, expense register await and async bug fixes,
-
 - 0.0.81 - product price history screen created, accounts interface created, account movements screen added
 - 0.0.80 - Category page interface added / select component created / input component improvaed, category page logic improved / fontawesome instlled > free solid and core / message system component started / loader image added / confirm dialog added / block page loader added / ul table list style created / button styles primary / default, green and red created / interface added to product page / product page code improvments
 - 0.0.79 - Category page code rewrited, firebase categories added, first interface layout itens added, sass style added

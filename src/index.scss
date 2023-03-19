@@ -438,6 +438,12 @@ border-bottom: 1px solid $gray1;}
   color: $purple;
   margin-right: $md;
 }
+
+.table-list .empty-list{
+  text-align: center;
+  font-weight: 400;
+  padding: $xl 0;
+}
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// Confirm Dialog
@@ -496,6 +502,11 @@ border-bottom: 1px solid $gray1;}
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// Block Page Loader
-.product-register-box{}
+.empty-page{
+  text-align: center;
+  padding: $xxl 0;
+  font-weight: 400;
+  color: $dark;
+}
 
 

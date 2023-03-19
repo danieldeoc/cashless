@@ -74,53 +74,63 @@ function CategoriesSettings(){
     // update categories page
     function updatePageList(catalog){
         if(catalog){
-            setListOfCategories( 
-                catalog.map((key, i) => (
-                    <li key={i}>
-                        {key.Name} 
-                        
-                        <span 
-                            className="delete-item-list" 
-                            onClick={ () => { 
-                                setReturningAlerts(
-                                    <ConfirmDialog 
-                                        message="Do you realy want to delete this category?"
-                                        onConfirmHandler={() => { confirmCatDelete(key.id) }}
-                                        onDenyHandle={denyDelete}
-                                        />)
-                                }}>
-                            <FontAwesomeIcon icon={faX} />
-                        </span>
+            if(catalog[0] == "No categories registered yet"){
+                setListOfCategories( 
+                    catalog.map((key, i) => (
+                        <li className="empty-list">
+                            {key}
+                        </li>
+                        )
+                    )
+                )
+            } else {
+                setListOfCategories( 
+                    catalog.map((key, i) => (
+                        <li key={i}>
+                            {key.Name} 
+                            
+                            <span 
+                                className="delete-item-list" 
+                                onClick={ () => { 
+                                    setReturningAlerts(
+                                        <ConfirmDialog 
+                                            message="Do you realy want to delete this category?"
+                                            onConfirmHandler={() => { confirmCatDelete(key.id) }}
+                                            onDenyHandle={denyDelete}
+                                            />)
+                                    }}>
+                                <FontAwesomeIcon icon={faX} />
+                            </span>
 
-                        
-                        {key.Childs.length > 0 &&
-                            <ul>
-                                {key.Childs.map((subKey, i) => (
-                                    <li key={i}>
-                                        {subKey} 
-                                        <span 
-                                            className="delete-item-list" 
-                                            onClick={ () => { 
-                                                setReturningAlerts(
-                                                    <ConfirmDialog 
-                                                        message="Do you realy want to delete this subcategory?"
-                                                        onConfirmHandler={() => { confirmSubCatDelete(key.id, subKey) }}
-                                                        onDenyHandle={denyDelete}
-                                                        />)
-                                                }}>
-                                            <FontAwesomeIcon icon={faX} />
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        }
-                    </li>
-                ))
-            );
-            setParentOptions(
-                catalog.map( (option) => option.Name)
-            ) 
-                
+                            
+                            {key.Childs.length > 0 &&
+                                <ul>
+                                    {key.Childs.map((subKey, i) => (
+                                        <li key={i}>
+                                            {subKey} 
+                                            <span 
+                                                className="delete-item-list" 
+                                                onClick={ () => { 
+                                                    setReturningAlerts(
+                                                        <ConfirmDialog 
+                                                            message="Do you realy want to delete this subcategory?"
+                                                            onConfirmHandler={() => { confirmSubCatDelete(key.id, subKey) }}
+                                                            onDenyHandle={denyDelete}
+                                                            />)
+                                                    }}>
+                                                <FontAwesomeIcon icon={faX} />
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
+                        </li>
+                    ))
+                );
+                setParentOptions(
+                    catalog.map( (option) => option.Name)
+                ) 
+            } 
         }
     }
     

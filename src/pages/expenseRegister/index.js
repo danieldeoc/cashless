@@ -1,7 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { Timestamp } from "firebase/firestore"
 import { getProductUnitsCatalog } from "../../globalOperators/globalGetters";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
@@ -20,7 +18,7 @@ import PageBox from "../../components/elements/pageBox";
 import PageTitle from "../../components/elements/texts/pageTitle";
 import SectionTitle from "../../components/elements/texts/sectionTitle";
 import Input from "../../components/forms/input";
-import SelectBox from "../../components/forms/select";
+
 import PrimaryButton from "../../components/elements/buttons/primaryButton";
 import Alert from "../../components/elements/messages/alert";
 import Loader from "../../components/elements/loader";
@@ -121,10 +119,11 @@ function RegisterExpenses(){
             res => setExpensesCatalog(res)
         )
     }
-
     const firstRender = useEffect( () => {
         fetchData()
     }, []);
+
+
 
     ///////////////////////
     // Delet Functions
@@ -133,38 +132,57 @@ function RegisterExpenses(){
     }
 
     let allowDelete = true;
-    function deleteExpenseItemList(id){
-        const deleteOption = <span 
-                className="delete-item-list" 
-                onClick={ () => { 
-                    setReturningAlerts(
-                        <ConfirmDialog 
-                            message="Do you realy want to delete this expense register?"
-                            onConfirmHandler={() => { 
-                                /* deleteExpense(id).then(
-                                    (res) => {
-                                        getProductCatalog().then(
-                                            res => setProductsCatalog(res)
-                                        );
-                                    }
-                                ) */
-                            }}
-                            onDenyHandle={denyDelete}
-                            />)
-                    }}>
-                <FontAwesomeIcon icon={faX} />
-            </span>
-        if(allowDelete){
-            allowDelete = false;
-            return deleteOption;
+    function deleteExpenseItemList(key){
+        if(typeof key !== "string"){
+            console.log("infos:", key)
+
+            let bank = accountCatalog.find( ({Name}) => Name == key.account);
+            let deleteInfos = {
+                expenseId: key.id,
+                bankId: bank.id,
+                products: key.products
+            }
+            const deleteOption = <span 
+                    className="delete-item-list" 
+                    onClick={ () => { 
+                        setReturningAlerts(
+                            <ConfirmDialog 
+                                message="Do you realy want to delete this expense register?"
+                                onConfirmHandler={() => { 
+                                    
+                                    // delete expense
+                                    deleteExpense(deleteInfos).then(
+                                        (response) => {
+                                            setReturningAlerts(
+                                                <Alert
+                                                    message={response.message}
+                                                    classes={response.classes}
+                                                    display={response.display}
+                                                    />
+                                            );
+                                            setTimeout(() => {
+                                                window.location.href = "/expenses"
+                                            }, 4000)
+
+                                        }
+                                    )
+                                }}
+                                onDenyHandle={denyDelete}
+                                />)
+                        }}>
+                    <FontAwesomeIcon icon={faX} />
+                </span>
+            if(allowDelete){
+                allowDelete = false;
+                return deleteOption;
+            }
         }
-        
     }
 
     ///////////////////////////////
     // return products from the catalog
     function getProductsFromCatalog(products){
-        if(productsCatalog){
+        if(productsCatalog && products){
             let list = [];
             products.forEach( (key, i) => {
                 let product = productsCatalog.find( ({id}) => id == key)
@@ -182,34 +200,58 @@ function RegisterExpenses(){
     // Once with data, it populates and updates the interface on data change
     const draw = useEffect( () => {
         // draw the list of expenses
-        if(expensesCatalog !== undefined){
-            setListExpenses(
-                expensesCatalog.map( key => ( 
-                    <li key={key.id}>  
-                        {key.store}
-                        {deleteExpenseItemList(key.id, key.CreatedAt)}
-                        <span className="table-list-right-side table-list-currency">
-                            {key.totalExpense} {expenseBankCurrency}
-                        </span>
-                        <div className="li-container">
-                            <span className="li-container-label">
-                                <strong>Products:</strong> <br/>
-                                {getProductsFromCatalog(key.products)}
-                            </span>
-                            <span className="li-container-label">
-                                <strong>Account:</strong> <br/>
-                                {key.account} by {key.paymentMethod}
-                            </span>
-                            <span className="li-container-label">
-                                <strong>Date:</strong> <br/>
-                                {getDate(key.CreatedAt)}
-                            </span>
+        if(accountCatalog && categoryCatalog && expensesCatalog){
+            /// redirects if there are not accounts or categories
+            if(
+                accountCatalog[0] == "No accounts registered yet" || 
+                categoryCatalog[0] == "No categories registered yet"
+            )
+            {   
+                console.error("You're not ready to be here.")
+                window.location.href = "/expenses/registernotavaliable";
+            } 
 
-                        </div>
-                    </li>
-                ))
-            ); 
+
+            // sets a blank screen if there are no expenses yet
+            if(expensesCatalog[0] == "No expenses registered yet"){
+                setListExpenses(
+                    expensesCatalog.map( (key, i) => ( 
+                        <li key={i} className="empty-list">  
+                            {key}
+                        </li>
+                    ))
+                )
+            // if there are expenses, draw the list
+            } else {
+                setListExpenses(
+                    expensesCatalog.map( key => ( 
+                        <li key={key.id}>  
+                            {key.store}
+                            {deleteExpenseItemList(key)}
+                            <span className="table-list-right-side table-list-currency">
+                                {key.totalExpense} {expenseBankCurrency}
+                            </span>
+                            <div className="li-container">
+                                <span className="li-container-label">
+                                    <strong>Products:</strong> <br/>
+                                    {getProductsFromCatalog(key.products)}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Account:</strong> <br/>
+                                    {key.account} by {key.paymenMethod}
+                                </span>
+                                <span className="li-container-label">
+                                    <strong>Date:</strong> <br/>
+                                    {getDate(key.CreatedAt)}
+                                </span>
+
+                            </div>
+                        </li>
+                    ))
+                ); 
+            };                
         }
+
     }, [expensesCatalog])
 
     
@@ -253,7 +295,7 @@ function RegisterExpenses(){
                 );
                 setTimeout(() => {
                     window.location.href = "/expenses"
-                }, 2000)
+                }, 4000)
             }
         )
     };

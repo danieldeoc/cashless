@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
+import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, limit } from "firebase/firestore"
 import { returnMessage } from "../tools/alertTools";
 import { getExpensesCatalog } from "./expenseRegistration";
 
@@ -61,9 +61,9 @@ export async function getProductCatalog(){
             return err;
         }).finally(() => {
             if(productCatalog.length == 0){
-                productCatalog.push("No products avaliable")
+                productCatalog.push("No products rsgitered yet.")
             }
-        })
+        })    
     return productCatalog;
 }
 
@@ -125,4 +125,33 @@ export async function updateProductDoc(data, id){
 export async function productAveragePrice(){
     // do something
 }
+
+//////////////
+// Delete product price history by expense
+export async function deleteProductHistoryByExpense(productId){
+    let result;
+
+    let historyResponse = [];
+    // get latest record
+    let reversePriceHistory = collection(db, collectionRef, productId, "price_history");
+    const queryReverse = query(reversePriceHistory, orderBy('CreatedAt', 'asc'), limit(1) ) 
+    await getDocs(queryReverse)
+        .then(
+            async (snapshot) => {
+                snapshot.docs.forEach( (doc) => {
+                    historyResponse.push( {...doc.data(), id: doc.id} )
+                });
+
+                const ref = doc(db, collectionRef, productId, "price_history", historyResponse[0].id);
+                await deleteDoc(ref).then(
+                    (res) => {
+                        result = "Price History deleted";
+                    }).catch( (err) => {
+                        console.error(err);
+                    })
+            
+            }).catch( err => console.log(err))
+    return result;
+}
+
 

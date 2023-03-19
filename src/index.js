@@ -15,6 +15,7 @@ import BankAccounts from './pages/bankAccounts/index';
 import Dashboard from './pages/dashboard/index';
 import ProductPriceHistory from './pages/productPriceHistory';
 import AccountMovements from './pages/accountMovements';
+import ExpenseRegistrationNotAvaliable from './pages/expenseRegister/notavaliable';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -33,6 +34,7 @@ root.render(
             <Route path="/bankaccounts/movements" element={<AccountMovements /> } />
             
             <Route path="/expenses" element={<RegisterExpenses /> } />
+            <Route path="/expenses/registernotavaliable" element={<ExpenseRegistrationNotAvaliable /> } />
 
             
         </Routes>

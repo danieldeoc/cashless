@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore"
+import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, where, Timestamp } from "firebase/firestore"
 import { returnMessage } from "../tools/alertTools";
 
 // FIREBASE CONFIG
@@ -57,7 +57,14 @@ export async function getAccountsCatalog(){
             });        
     }).catch( (err) => {
         console.error(err)
-    });
+    }).finally(
+        () => {
+            if(bankCatalog.length == 0){
+                bankCatalog = ["No accounts registered yet"]
+            }  
+        }
+    );
+    console.log(bankCatalog)
     return bankCatalog;
 }
 
@@ -154,6 +161,21 @@ export async function getAccountStatus(id){
     }
 }
 
+/* ################################## */
+// Update an Account Balance
+// Add a register to the bank balance and updates the bank current balance
+/* ########################## */
+export async function updateBankBalance(bankId, newBalance){
+    ////////////////////////
+    // Updates bank balance
+    const ref = doc(db, collectionRef, bankId);
+    await updateDoc(ref, {
+        CurrentFunds: newBalance 
+    }).then( (newBalance) => {
+        console.log(newBalance, "Bank balance updated");
+        
+    }).catch( err => console.log(err));
+}
 
 /* ################################## */
 // Add Bank Expense
@@ -165,18 +187,11 @@ export async function addBankExpense(bankId, expenseData){
     // Add Debit Movment Registration
     let ref = collection(db, collectionRef, bankId, "balance");
     await addDoc(ref, expenseData)
-        .then((balanceItem) => {
+        .then(
+            async (balanceItem) => {
             console.log("New balance added", balanceItem)
 
-            ////////////////////////
-            // Updates bank balance
-            const ref = doc(db, collectionRef, bankId);
-            updateDoc(ref, {
-                CurrentFunds: expenseData.NewBalance 
-            }).then( (newBalance) => {
-                console.log(newBalance, "Bank balance updated");
-                
-            }).catch( err => console.log(err));
+            await updateBankBalance(bankId, expenseData.NewBalance );
 
         }).catch( err => console.log(err))
     
@@ -204,4 +219,61 @@ export async function getAccountMovments(bankId){
                 response = null
         })
     return response;
+}
+
+
+/* ################################## */
+// Delete Bank movment
+// Add a register to the bank balance and updates the bank current balance
+/* ########################## */
+export async function deleteBankBalanceByExpense(bankId, expenseId){
+    console.log(bankId, expenseId);
+    let result;
+    
+    // 1. reverse bank balance
+    // get last balance
+    const balanceResponse = []
+    let reverseBalanceRef = collection(db, collectionRef, bankId, "balance");
+    const queryReverse = query(reverseBalanceRef, where("Expense", "==", expenseId)) 
+    await getDocs(queryReverse).then(
+        async (snapshot) => {
+            snapshot.docs.forEach( (doc) => {
+                balanceResponse.push( {...doc.data(), id: doc.id} )
+            });
+            if(balanceResponse.length > 0){
+                console.warn("1. get bank last movement")
+                let id = balanceResponse[0].id;
+                console.log(id)
+                /////////////////////////////////
+                // delete the movement
+                const ref = doc(db, collectionRef, bankId, "balance", id);
+                await deleteDoc(ref).then(
+                    (res) => {
+                        result = "bank balance deleted"
+                        console.log("bank balance delete")
+                    }
+                    ).catch( (err) => {
+                        console.error("Cannot delete bank movement: ", err);
+                    })
+
+                /////////////////////////////////
+                // Update bank balance
+                console.warn("3. update bank balance")
+                await updateBankBalance(bankId, balanceResponse[0].LastBalance )
+                    .then(
+                        (response) => {
+                            console.log("balance updated", response)
+                        }
+                    ).catch( err => console.error(err));
+                console.log(balanceResponse);
+
+            } else {
+                result = "no balance found";
+            }
+        }
+    ).catch(
+        err => console.error(err)
+    ) 
+    return result;
+
 }

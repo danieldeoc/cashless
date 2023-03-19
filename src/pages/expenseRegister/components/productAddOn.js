@@ -200,6 +200,8 @@ function ProductAddOn(props){
             <FormSection>
                 <SubTitle text={subTitleText} />
                 <InputAutoComplete 
+                    label="Product name:"
+                    placeholder="Inser a product name"
                     value={expenseName}
                     onChangeHandler={ (key) => { 
                         setExpenseName(key);                                    

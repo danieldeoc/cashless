@@ -1,6 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, where } from "firebase/firestore"
+import { deleteBankBalanceByExpense } from "./accounts";
+import { deleteProductHistoryByExpense } from "./productRegistration";
+import { returnMessage } from "../tools/alertTools";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -27,25 +30,6 @@ export async function expenseRegistration(data){
     return docRef.id;
 }
 
-
-/* ################################## */
-// DELETE EXPENSE
-// Delets the last expense
-/* ########################## */
-export async function deleteExpense(id){
-    let result;
-
-   // const expense = getExpenseDetail(id);
-
-   // console.log(expense)
-
-    // delete product price history
-    // delete bank account movment
-    // delete expense register    
-
-    return result;
-}
-
 /* ################################## */
 // EXPENSE DETAIL
 // GET A SINGLE EXPENSE DETAIL
@@ -59,7 +43,7 @@ export async function deleteExpense(id){
 // Options: Query options, 
 /* ########################## */
 export async function getExpensesCatalog(queryOptions){
-    const expensesCatalog = [];
+    let expensesCatalog = [];
     let querySettings;
     if(queryOptions === undefined || queryOptions === "default"){
         querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'desc')) 
@@ -71,6 +55,58 @@ export async function getExpensesCatalog(queryOptions){
             snapshot.docs.forEach( (doc) => {
                 expensesCatalog.push( {...doc.data(), id: doc.id} )
             })
-        });
+        }).finally(
+            () => {
+                if(expensesCatalog.length == 0){
+                    expensesCatalog = ["No expenses registered yet"]
+                }
+            }
+        );
+        console.log()
     return expensesCatalog;
+}
+
+
+/* ################################## */
+// Delete expense
+// Options: Query options, 
+/* ########################## */
+
+export async function deleteExpense(deleteInfos){
+    let result;
+    console.warn("1. Starts delete")
+
+    const deleteProductsHistory = async () => {
+        // delete product price history
+        deleteInfos.products.forEach(
+            async (key) => {
+                await deleteProductHistoryByExpense(key).then(
+                    (res) => {
+                        console.warn("2. Deletes product price history", res)
+                    }
+                )
+            }
+        )
+    }
+    await deleteProductsHistory().then(
+        async () => {
+            /// delete account register
+            await deleteBankBalanceByExpense(deleteInfos.bankId, deleteInfos.expenseId).then(
+                async (res) => {
+                    console.warn("3. Deletes accoutn balance movment", res)
+
+                    // deltes the expense
+                    const ref = doc(db, collectionRef, deleteInfos.expenseId);
+                    await deleteDoc(ref).then(
+                        (res) => {
+                            console.warn("Expense deleted");
+                            result = returnMessage("Expense deleted")
+                        }).catch( (err) => {
+                            console.error(err);
+                        })
+                }
+            ).catch( err => console.error(err))
+        }
+    )
+    return result;
 }
