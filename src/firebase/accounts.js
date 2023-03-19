@@ -68,6 +68,19 @@ export async function getAccountsCatalog(){
     return bankCatalog;
 }
 
+//////////////
+// Return Product
+export async function getAccount(id){
+    let account;    
+    await getDoc(doc(db, collectionRef, id))
+        .then( (response) => {          
+            account = response.data();
+        }).catch( (err) => {
+            console.error(err);
+        });   
+    return account;
+}
+
 
 
 /* ################################## */
@@ -276,4 +289,25 @@ export async function deleteBankBalanceByExpense(bankId, expenseId){
     ) 
     return result;
 
+}
+
+
+
+/* ################################## */
+// Get Account Balance History
+/* ########################## */
+export async function getAccountBalanceHistory(accountId){
+    let history = [];
+
+    let balanceHistory = collection(db, collectionRef, accountId, "balance");
+    const queryHistory = query(balanceHistory, orderBy('CreatedAt', 'desc')) 
+    await getDocs(queryHistory).then(
+        (snapshot) => {
+            snapshot.docs.forEach( (doc) => {
+                history.push( {...doc.data(), id: doc.id} )
+            });
+        }
+    ).catch( err => console.log(err) )
+
+    return history;
 }

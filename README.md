@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.84 - pricehistory screen created, account history screen created, login and register page created, home page inserted, dashboard inserted
 - 0.0.83 - expense, products anda accounts empty result list bug fix, autocomplete bug fixes, empty screen added for no categories or accounts setted, expense delte process added (deletes expense, deletes bank account movment and updates balance, deletes product history price register)
 - 0.0.82 - expense screen interface added, code bugs fixed, expense register await and async bug fixes,
 - 0.0.81 - product price history screen created, accounts interface created, account movements screen added

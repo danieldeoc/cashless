@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, where } from "firebase/firestore"
 import { deleteBankBalanceByExpense } from "./accounts";
-import { deleteProductHistoryByExpense } from "./productRegistration";
+import { deleteProductHistoryByExpense } from "./product";
 import { returnMessage } from "../tools/alertTools";
 
 // FIREBASE CONFIG

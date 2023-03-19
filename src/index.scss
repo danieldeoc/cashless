@@ -438,6 +438,9 @@ border-bottom: 1px solid $gray1;}
   color: $purple;
   margin-right: $md;
 }
+.table-list-currency.no-margin{
+  margin-right: 0;
+}
 
 .table-list .empty-list{
   text-align: center;

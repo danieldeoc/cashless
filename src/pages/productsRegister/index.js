@@ -6,7 +6,7 @@ import {
 } from "../../globalOperators/globalGetters";
 
 import { getCategoriesCatalog } from "../../firebase/categories";
-import { addProductToCatalog, deleteProductFromCatalog, getProductCatalog } from "../../firebase/productRegistration"
+import { addProductToCatalog, deleteProductFromCatalog, getProductCatalog } from "../../firebase/product"
 
 import { Timestamp, serverTimestamp } from "firebase/firestore";
 import Loader from "../../components/elements/loader";

@@ -69,6 +69,20 @@ export async function getProductCatalog(){
 
 
 //////////////
+// Return Product
+export async function getProduct(id){
+    let product;    
+    await getDoc(doc(db, collectionRef, id))
+        .then( (response) => {          
+            product = response.data();
+        }).catch( (err) => {
+            return err;
+        });   
+    return product;
+}
+
+
+//////////////
 // Deletes a product to the catalog
 export async function deleteProductFromCatalog(id){
     let queryOptions = {
@@ -153,5 +167,24 @@ export async function deleteProductHistoryByExpense(productId){
             }).catch( err => console.log(err))
     return result;
 }
+
+//////////////
+// Produc price hisory
+export async function getProductPriceHistory(productId){
+    let results = [];
+
+    let priceHistory = collection(db, collectionRef, productId, "price_history");
+    const queryHistory = query(priceHistory, orderBy('CreatedAt', 'asc')) 
+    await getDocs(queryHistory).then(
+        (snapshot) => {
+            snapshot.docs.forEach( (doc) => {
+                results.push( {...doc.data(), id: doc.id} )
+            });
+        }
+    ).catch( err => console.log(err) )
+    return results;
+}
+
+
 
 

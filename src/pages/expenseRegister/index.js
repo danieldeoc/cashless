@@ -10,7 +10,7 @@ import AccountSelects from "./components/accountsSelects";
 
 import { expenseRegisterProcess } from "./tools/expenseRegister";
 
-import { getProductCatalog } from "../../firebase/productRegistration";
+import { getProductCatalog } from "../../firebase/product";
 import { getCategoriesCatalog } from "../../firebase/categories";
 import { deleteExpense, getExpensesCatalog } from "../../firebase/expenseRegistration";
 

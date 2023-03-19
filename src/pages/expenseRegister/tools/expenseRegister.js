@@ -1,5 +1,5 @@
 import { serverTimestamp } from "firebase/firestore";
-import { addProductToCatalogByExpenses, addProductPriceHistory, updateProductDoc } from "../../../firebase/productRegistration";
+import { addProductToCatalogByExpenses, addProductPriceHistory, updateProductDoc } from "../../../firebase/product";
 import { expenseRegistration } from "../../../firebase/expenseRegistration";
 import { getAccountStatus, addBankExpense } from "../../../firebase/accounts";
 import { returnMessage } from "../../../tools/alertTools";
