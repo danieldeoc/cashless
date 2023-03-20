@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.85 - register process created, login process created, dashboard created, block on fisical money delete, account settup created, accounts, products, setttings and expenses firebase reference fixed to user ref id,
 - 0.0.84 - pricehistory screen created, account history screen created, login and register page created, home page inserted, dashboard inserted
 - 0.0.83 - expense, products anda accounts empty result list bug fix, autocomplete bug fixes, empty screen added for no categories or accounts setted, expense delte process added (deletes expense, deletes bank account movment and updates balance, deletes product history price register)
 - 0.0.82 - expense screen interface added, code bugs fixed, expense register await and async bug fixes,
@@ -21,35 +22,17 @@ Bank Account register
 - set bank currency symbol
 - remove page reload on add bank account
 
-Categories
-- Check what happens when categories list is empty
+
 
 Product Catalog
-- Check what happens when product catalog list is empty
 - does not allow delet if product exists in: expense list
 
 Dashboard
 - Create bank balance overviews
 
 Expense register
-- cascade functions
-- on bank register, ensure 2 digit validation
-
-- review expenses products preseted values
-- second product amount type is undefined
-- check for undefined variables before submit
-
-- product catalog should fill category and subcategory fields
-
-- fix price input value
-
-- remove add button
-
-
-- remove expense (not remove products, only if the lastone in a set of time, remove bank account movment, reupdate bank balance, remove product pricehistory )
-
-- review multiexpense process
-- review multiexpense fields input
+- cannot register an expense in insufient funds
+- registering 3 products
 
 # Add Interface
 

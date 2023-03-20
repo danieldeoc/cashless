@@ -3,6 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, limit } from "firebase/firestore"
 import { returnMessage } from "../tools/alertTools";
 import { getExpensesCatalog } from "./expenseRegistration";
+import { getAuthCredentias } from "./auth";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -17,14 +18,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore();
+
+
+const credentials = getAuthCredentias();
+const userDb = "userdb_"+credentials.id;
 const collectionRef = "products_catalog";
+const superDoc = "products_catalog";
+const colRef = collection(db, userDb, superDoc, collectionRef);
+
 
 
 //////////////
 // Adds a new product to the catalog
 export async function addProductToCatalog(data){
     let response;
-    const ref = collection(db, collectionRef);
+    const ref = collection(db, userDb, superDoc, collectionRef);
     const docRef = await addDoc(ref, data).then( 
         (res) => {
             response = returnMessage("New product added")
@@ -37,7 +45,7 @@ export async function addProductToCatalog(data){
 
 /// custom function to add a product by the expense process and return the id
 export async function addProductToCatalogByExpenses(data){
-    const docRef = await addDoc(collection(db, collectionRef), data);
+    const docRef = await addDoc(collection(db, userDb, superDoc, collectionRef), data);
     return docRef.id;
 }
 
@@ -51,7 +59,7 @@ export async function addProductToCatalogByExpenses(data){
 // Return Products Catalog
 export async function getProductCatalog(){
     let productCatalog = [];
-    const queryList = query(collection(db, "products_catalog"), orderBy('Name', 'asc')) 
+    const queryList = query(collection(db, userDb, superDoc, collectionRef), orderBy('Name', 'asc')) 
     await getDocs(queryList)
         .then( (snapshot) => {              
             snapshot.docs.forEach((doc) => {
@@ -72,7 +80,7 @@ export async function getProductCatalog(){
 // Return Product
 export async function getProduct(id){
     let product;    
-    await getDoc(doc(db, collectionRef, id))
+    await getDoc(doc(db, userDb, superDoc, collectionRef, id))
         .then( (response) => {          
             product = response.data();
         }).catch( (err) => {
@@ -99,7 +107,7 @@ export async function deleteProductFromCatalog(id){
                 response = returnMessage("This product cannot be deleted because there are expenses registered with it.", "error")
                 console.log(response)
             } else {
-                const ref = doc(db, collectionRef, id);
+                const ref = doc(db, userDb, superDoc, collectionRef, id);
                 await deleteDoc(ref).then(
                     (res) => {
                         console.warn("Document deleted");
@@ -117,7 +125,7 @@ export async function deleteProductFromCatalog(id){
 //////////////
 // Adds a new product to the catalog
 export async function addProductPriceHistory(data, id){
-    let ref = collection(db, collectionRef, id, "price_history");
+    let ref = collection(db, userDb, superDoc, collectionRef, id, "price_history");
     await addDoc(ref, data)
         .then((res) => {
             console.log(res)
@@ -129,7 +137,7 @@ export async function addProductPriceHistory(data, id){
 //////////////
 // update a document field
 export async function updateProductDoc(data, id){
-    const ref = doc(db, collectionRef, id);
+    const ref = doc(db, userDb, superDoc, collectionRef, id);
     // Set the "capital" field of the city 'DC'
     await updateDoc(ref, data).then( res => console.log(res, "data Updated"));
 }
@@ -147,7 +155,7 @@ export async function deleteProductHistoryByExpense(productId){
 
     let historyResponse = [];
     // get latest record
-    let reversePriceHistory = collection(db, collectionRef, productId, "price_history");
+    let reversePriceHistory = collection(db, userDb, superDoc, collectionRef, productId, "price_history");
     const queryReverse = query(reversePriceHistory, orderBy('CreatedAt', 'asc'), limit(1) ) 
     await getDocs(queryReverse)
         .then(
@@ -156,7 +164,7 @@ export async function deleteProductHistoryByExpense(productId){
                     historyResponse.push( {...doc.data(), id: doc.id} )
                 });
 
-                const ref = doc(db, collectionRef, productId, "price_history", historyResponse[0].id);
+                const ref = doc(db, userDb, superDoc, collectionRef, productId, "price_history", historyResponse[0].id);
                 await deleteDoc(ref).then(
                     (res) => {
                         result = "Price History deleted";
@@ -173,7 +181,7 @@ export async function deleteProductHistoryByExpense(productId){
 export async function getProductPriceHistory(productId){
     let results = [];
 
-    let priceHistory = collection(db, collectionRef, productId, "price_history");
+    let priceHistory = collection(db, userDb, superDoc, collectionRef, productId, "price_history");
     const queryHistory = query(priceHistory, orderBy('CreatedAt', 'asc')) 
     await getDocs(queryHistory).then(
         (snapshot) => {

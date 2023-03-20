@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, updateDoc, serverTimestamp, addDoc, orderBy, doc, deleteDoc, Timestamp } from "firebase/firestore"
 import { returnMessage } from "../tools/alertTools";
+import { getAuthCredentias } from "./auth";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -17,8 +18,11 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore();
 
+const credentials = getAuthCredentias();
+const userDb = "userdb_"+credentials.id;
 const collectionRef = "categories";
-const colRef = collection(db, collectionRef);
+const superDoc = "categories_catalog";
+const colRef = collection(db, userDb, superDoc, collectionRef);
 
 
 /* ################################## */
@@ -26,7 +30,7 @@ const colRef = collection(db, collectionRef);
 /* ########################## */
 export async function getCategoriesCatalog(){
     let categories = []; 
-    const queryList = query(collection(db, collectionRef), orderBy('Name', 'asc')) 
+    const queryList = query(collection(db, userDb, superDoc, collectionRef), orderBy('Name', 'asc')) 
     await getDocs(queryList).then( (snapshot) => {              
         snapshot.docs.forEach((doc) => {
             categories.push({ ...doc.data(), id: doc.id})
@@ -47,7 +51,7 @@ export async function getCategoriesCatalog(){
 // Delet a Category
 /* ########################## */
 export async function deletCategorie(id){
-    const docRef = doc(db, collectionRef, id);
+    const docRef = doc(db, userDb, superDoc, collectionRef, id);
     await deleteDoc(docRef)
             .then( (res) => {
                 console.error("deleted", res);
@@ -67,7 +71,7 @@ export async function deleteSubCateory(catId, subcategory, catalog){
         subCats.splice(delIndex, 1)
     }
 
-    const upDocRef = doc(db, collectionRef, catId)
+    const upDocRef = doc(db, userDb, superDoc, collectionRef, catId)
     await updateDoc(upDocRef, {
             Childs: subCats
         }).then((res) => {
@@ -117,7 +121,7 @@ export async function addNewSubCategory(level, catalog, data){
             childs.push(data)
             console.log(id, childs, data)
             
-            const ref = doc(db, collectionRef, id);
+            const ref = doc(db, userDb, superDoc, collectionRef, id);
             await updateDoc( ref, {
                 Childs: childs
             }).then((res) => {
@@ -126,4 +130,10 @@ export async function addNewSubCategory(level, catalog, data){
     } else {
         alert("You need to define a name for the subcategory")
     }
+}
+
+
+export async function setUpCategories(categories){
+    
+
 }

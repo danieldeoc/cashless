@@ -4,6 +4,7 @@ import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addD
 import { deleteBankBalanceByExpense } from "./accounts";
 import { deleteProductHistoryByExpense } from "./product";
 import { returnMessage } from "../tools/alertTools";
+import { getAuthCredentias } from "./auth";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -17,8 +18,15 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const collectionRef = "expenses";
+
 const db = getFirestore();
+
+
+const credentials = getAuthCredentias();
+const userDb = "userdb_"+credentials.id;
+const collectionRef = "expenses";
+const superDoc = "expenses_catalog";
+const colRef = collection(db, userDb, superDoc, collectionRef);
 
 
 /* ################################## */
@@ -26,7 +34,7 @@ const db = getFirestore();
 // Adds a new expense register to the general list
 /* ########################## */
 export async function expenseRegistration(data){
-    const docRef = await addDoc(collection(db, collectionRef), data);
+    const docRef = await addDoc(colRef, data);
     return docRef.id;
 }
 
@@ -46,9 +54,9 @@ export async function getExpensesCatalog(queryOptions){
     let expensesCatalog = [];
     let querySettings;
     if(queryOptions === undefined || queryOptions === "default"){
-        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'desc')) 
+        querySettings = query(colRef, orderBy('CreatedAt', 'desc')) 
     } else {
-        querySettings = query(collection(db, collectionRef), orderBy('CreatedAt', 'asc'), where(queryOptions.field, queryOptions.operator, queryOptions.criteria));
+        querySettings = query(colRef, orderBy('CreatedAt', 'asc'), where(queryOptions.field, queryOptions.operator, queryOptions.criteria));
     }
     await getDocs(querySettings)
         .then( (snapshot) => {
@@ -96,7 +104,7 @@ export async function deleteExpense(deleteInfos){
                     console.warn("3. Deletes accoutn balance movment", res)
 
                     // deltes the expense
-                    const ref = doc(db, collectionRef, deleteInfos.expenseId);
+                    const ref = doc(db, userDb, superDoc, collectionRef, deleteInfos.expenseId);
                     await deleteDoc(ref).then(
                         (res) => {
                             console.warn("Expense deleted");

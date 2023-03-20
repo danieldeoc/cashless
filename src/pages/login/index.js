@@ -5,6 +5,7 @@ import PageTitle from "../../components/elements/texts/pageTitle";
 import SectionTitle from "../../components/elements/texts/sectionTitle";
 import Input from "../../components/forms/input";
 import PrimaryButton from "../../components/elements/buttons/primaryButton";
+import { signIn } from "../../firebase/auth";
 
 
 function LoginPage(){
@@ -12,9 +13,6 @@ function LoginPage(){
     const [userEmail, setUserEmail] = useState(undefined);
     const [userPass, setUserPass] = useState(undefined);
 
-    function signIn(){
-        console.log(userEmail, userPass)
-    }
 
     return(
         <>
@@ -46,7 +44,14 @@ function LoginPage(){
 
                 <PrimaryButton
                     label="Sign-in"
-                    onClickHandler={signIn} /> 
+                    onClickHandler={
+                        async () => {
+                            if( userEmail && userPass){
+                                await signIn(userEmail, userPass)
+                            } else {
+                                alert("Please, provide an e-mail or password")
+                            }
+                        }} /> 
             </PageBox>
         </>
     )

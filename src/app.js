@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CategoriesSettings from './pages/categories/index';
 import ProductsCatalog from './pages/productsRegister/index';
 import Navigator from './components/elements/navigator';
@@ -16,20 +16,34 @@ import ExpenseRegistrationNotAvaliable from './pages/expenseRegister/notavaliabl
 import RegisterPage from './pages/register';
 import LoginPage from './pages/login';
 import HomePage from "./pages/homePage";
+import SetUpAccounts from "./pages/register/setUp";
 
 function App(){
+
+    const [userID, setUserId] = useState(undefined)
+    const [userName, setUserName] = useState(undefined)
+    const [userEmail, setUserEmail] = useState(undefined)
+     
+    useEffect( () => {
+        
+    })
+
+
     return(
         <Router>
             <Navigator />
             <Routes>                
-                <Route exact path="/" element={<HomePage />} />
-                <Route exact path="/dashboard" element={<Dashboard />} />
+                <Route  path="/" element={<HomePage />} />
+                <Route  path="/dashboard" element={<Dashboard />} />
                 
-                <Route exact path="/register" element={<RegisterPage />} />
-                <Route exact path="/login" element={<LoginPage />} />
+                <Route  path="/register" element={<RegisterPage />} />
+
+                <Route  path="/register/setup" element={<SetUpAccounts />} />
+
+                <Route  path="/login" element={<LoginPage />} />
                 
-                <Route exact path="/products" element={<ProductsCatalog />} />
-                <Route exact path="/products/priceHistory" element={<ProductPriceHistory />} />
+                <Route  path="/products" element={<ProductsCatalog />} />
+                <Route  path="/products/priceHistory" element={<ProductPriceHistory />} />
                 
                 <Route path="/categories" element={<CategoriesSettings /> } />
 

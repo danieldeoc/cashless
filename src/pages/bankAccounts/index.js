@@ -101,15 +101,20 @@ function BankAccounts(){
                             <span 
                                 className="delete-item-list" 
                                 onClick={ () => { 
-                                    setReturningAlerts(
-                                        <ConfirmDialog 
-                                            message="Do you realy want to delete this subcategory?"
-                                            onConfirmHandler={() => { 
-                                                deleteBankAccountCall(key.id)
-                                            }}
-                                            onDenyHandle={denyDelete}
-                                            />)
-                                    }}>
+                                    if(key.Name != "Paper Money"){
+                                        setReturningAlerts(
+                                            <ConfirmDialog 
+                                                message="Do you realy want to delete this subcategory?"
+                                                onConfirmHandler={() => { 
+                                                    deleteBankAccountCall(key.id, key.Name)
+                                                }}
+                                                onDenyHandle={denyDelete}
+                                                />)
+                                                
+                                    } else {
+                                        alert("Fisical money account cannot be deleted.")
+                                    }
+                                }}>
                                 <FontAwesomeIcon icon={faX} />
                             </span>
     
@@ -147,21 +152,23 @@ function BankAccounts(){
     /* ############################# */
     // Delet account
     function deleteBankAccountCall(id){
-        deletBankAccount(id).then( 
-            (response) => {
-                setReturningAlerts(
-                    <Alert
-                        message={response.message}
-                        classes={response.classes}
-                        display={response.display}
-                        />
-                );
-                if( response.classes != "error" && response.classes != "warning"){
-                    getAccountsCatalog().then( (res) => {
-                        setAccountsCatalog(res);
-                    })
-                }
-            })
+        
+            deletBankAccount(id).then( 
+                (response) => {
+                    setReturningAlerts(
+                        <Alert
+                            message={response.message}
+                            classes={response.classes}
+                            display={response.display}
+                            />
+                    );
+                    if( response.classes != "error" && response.classes != "warning"){
+                        getAccountsCatalog().then( (res) => {
+                            setAccountsCatalog(res);
+                        })
+                    }
+                })
+        
     } 
     
 

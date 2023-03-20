@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, where, Timestamp } from "firebase/firestore"
 import { returnMessage } from "../tools/alertTools";
+import { getAuthCredentias } from "./auth";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -17,8 +18,14 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore();
 
+// const collectionRef = "bank_accounts";
+// const colRef = collection(db, collectionRef);
+
+const credentials = getAuthCredentias();
+const userDb = "userdb_"+credentials.id;
+const superDocRef = "accounts_catalog";
 const collectionRef = "bank_accounts";
-const colRef = collection(db, collectionRef);
+const colRef = collection(db, userDb, superDocRef, collectionRef);
 
 
 /* The bank account register it will contain:
@@ -47,7 +54,7 @@ const colRef = collection(db, collectionRef);
 /* ########################## */
 export async function getAccountsCatalog(){
     let bankCatalog = [];
-    const queryList = query(collection(db, collectionRef), orderBy('Name', 'asc')) 
+    const queryList = query(colRef, orderBy('Name', 'asc')) 
     await getDocs(queryList).then( 
         (snapshot) => {
             snapshot.docs.forEach( (doc) => {
@@ -64,7 +71,6 @@ export async function getAccountsCatalog(){
             }  
         }
     );
-    console.log(bankCatalog)
     return bankCatalog;
 }
 
@@ -72,7 +78,7 @@ export async function getAccountsCatalog(){
 // Return Product
 export async function getAccount(id){
     let account;    
-    await getDoc(doc(db, collectionRef, id))
+    await getDoc(doc(db, userDb, superDocRef, collectionRef, id))
         .then( (response) => {          
             account = response.data();
         }).catch( (err) => {
@@ -88,7 +94,7 @@ export async function getAccount(id){
 // Return the default list of payment options
 /* ########################## */
 export async function getPaymentsCatalog(){
-    const docSnap = await getDoc(doc(db, "settings", "account_settings"));
+    const docSnap = await getDoc(doc(db, userDb, "account_settings"));
     if (docSnap.exists()) {
         return docSnap.data().payment_options;
     } else {
@@ -103,7 +109,7 @@ export async function getPaymentsCatalog(){
 // Return the default list of avaliable currencys
 /* ########################## */
 export async function getCurrecyCatalog(){
-    const docSnap = await getDoc(doc(db, "settings", "account_settings"));
+    const docSnap = await getDoc(doc(db, userDb, "account_settings"));
     if (docSnap.exists()) {
         return docSnap.data().currency_options;
     } else {
@@ -144,7 +150,7 @@ export async function deletBankAccount(id){
                 response = returnMessage("Account can not be deleted because there are movments on it.", "warning");
             } else {
                 console.log("del", res);
-                const docRef = doc(db, collectionRef, id);
+                const docRef = doc(db, userDb, superDocRef, collectionRef, id);
                 await deleteDoc(docRef)
                     .then( (res) => {
                         console.log("Bank Account Deleted");
@@ -164,7 +170,7 @@ export async function deletBankAccount(id){
 // Return the current status of a bank account
 /* ########################## */
 export async function getAccountStatus(id){
-    const docSnap = await getDoc(doc(db, collectionRef, id));
+    const docSnap = await getDoc(doc(db, userDb, superDocRef, collectionRef, id));
     if (docSnap.exists()) {
         return docSnap.data();
     } else {
@@ -181,7 +187,7 @@ export async function getAccountStatus(id){
 export async function updateBankBalance(bankId, newBalance){
     ////////////////////////
     // Updates bank balance
-    const ref = doc(db, collectionRef, bankId);
+    const ref = doc(db, userDb, superDocRef, collectionRef, bankId);
     await updateDoc(ref, {
         CurrentFunds: newBalance 
     }).then( (newBalance) => {
@@ -198,7 +204,7 @@ export async function addBankExpense(bankId, expenseData){
     console.log(bankId, expenseData)
     ////////////////////////
     // Add Debit Movment Registration
-    let ref = collection(db, collectionRef, bankId, "balance");
+    let ref = collection(db, userDb, superDocRef, collectionRef, bankId, "balance");
     await addDoc(ref, expenseData)
         .then(
             async (balanceItem) => {
@@ -219,7 +225,7 @@ export async function getAccountMovments(bankId){
     let response;
     ////////////////////////
     // Add Debit Movment Registration
-    let ref = collection(db, collectionRef, bankId, "balance");
+    let ref = collection(db, userDb, superDocRef, collectionRef, bankId, "balance");
     await getDocs(ref)
         .then((snapshot) => {
             response = [];
@@ -246,7 +252,7 @@ export async function deleteBankBalanceByExpense(bankId, expenseId){
     // 1. reverse bank balance
     // get last balance
     const balanceResponse = []
-    let reverseBalanceRef = collection(db, collectionRef, bankId, "balance");
+    let reverseBalanceRef = collection(db, userDb, superDocRef, collectionRef, bankId, "balance");
     const queryReverse = query(reverseBalanceRef, where("Expense", "==", expenseId)) 
     await getDocs(queryReverse).then(
         async (snapshot) => {
@@ -259,7 +265,7 @@ export async function deleteBankBalanceByExpense(bankId, expenseId){
                 console.log(id)
                 /////////////////////////////////
                 // delete the movement
-                const ref = doc(db, collectionRef, bankId, "balance", id);
+                const ref = doc(db, userDb, superDocRef, collectionRef, bankId, "balance", id);
                 await deleteDoc(ref).then(
                     (res) => {
                         result = "bank balance deleted"
@@ -299,7 +305,7 @@ export async function deleteBankBalanceByExpense(bankId, expenseId){
 export async function getAccountBalanceHistory(accountId){
     let history = [];
 
-    let balanceHistory = collection(db, collectionRef, accountId, "balance");
+    let balanceHistory = collection(db, userDb, superDocRef, collectionRef, accountId, "balance");
     const queryHistory = query(balanceHistory, orderBy('CreatedAt', 'desc')) 
     await getDocs(queryHistory).then(
         (snapshot) => {
