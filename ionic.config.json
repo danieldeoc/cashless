@@ -1,0 +1,7 @@
+{
+    "name": "Cashless",
+    "integrations": {
+      "capacitor": {}
+    },
+    "type": "react"
+  }

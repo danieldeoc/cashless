@@ -218,6 +218,31 @@ export async function addBankExpense(bankId, expenseData){
 
 
 /* ################################## */
+// Add money to Bank
+/* ########################## */
+export async function addMoneyToBank(bankId, data){
+    console.log(db, userDb, superDocRef, collectionRef, bankId)
+    let result;
+    ////////////////////////
+    // Add Debit Movment Registration
+    let ref = collection(db, userDb, superDocRef, collectionRef, bankId, "balance");
+    await addDoc(ref, data)
+        .then(
+            async (balanceItem) => {
+                console.log("New balance added", balanceItem)
+
+                await updateBankBalance(bankId, data.NewBalance ).then(
+                    (res) => {
+                        result = returnMessage("Money added to the account.");
+                    }
+                );
+
+        }).catch( err => console.log(err))
+    return result;
+}
+
+
+/* ################################## */
 // Get Bank account movments
 // returns the movments of a bank account
 /* ########################## */

@@ -27,7 +27,7 @@ const auth = getAuth(app);
 export async function logOut() {
     await signOut(auth).then(() => {
          console.log("loged out")
-         sessionStorage.removeItem('Auth User')
+         sessionStorage.removeItem('User Auth')
          sessionStorage.removeItem('User Name')
          sessionStorage.removeItem('User E-mail')
          window.location.href = "/";
@@ -41,6 +41,7 @@ export async function logOut() {
 ////////////
 // manage session storage creation
 function sessionStorageControl(id, name, email){
+    console.log(id, name, email)
     sessionStorage.setItem('User Auth', id);
     if(name){
         sessionStorage.setItem('User Name', name);
@@ -57,8 +58,8 @@ export function getAuthCredentias(){
         email: undefined
     }
     credentials.id = sessionStorage.getItem('User Auth')
-    credentials.name =sessionStorage.getItem('User Name')
-    credentials.email =sessionStorage.getItem('User E-mail')
+    credentials.name = sessionStorage.getItem('User Name')
+    credentials.email = sessionStorage.getItem('User E-mail')
     return credentials;
 }
 
@@ -67,15 +68,18 @@ export function getAuthCredentias(){
 export async function createUser(name, email, password) {
     let result;
     await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then(
+            async (userCredential) => {
             const user = userCredential.user;
                 // sets user name
-                updateProfile(user, {
+                await updateProfile(user, {
                     displayName: name
+                }).then( () => {
+
+                    result = returnMessage("Register completed");
+                    sessionStorageControl(user.uid, name, user.email)
                 })
-            result = returnMessage("Register completed");
-            sessionStorageControl(user.uid, name, user.email)
-            //window.location.href = "/";
+            
         })
         .catch((error) => {
             const errorCode = error.code;

@@ -3,7 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getProductUnitsCatalog } from "../../globalOperators/globalGetters";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
-import { currencySymbol, formatValueTo2Digit, formatValueToMoney } from "../../tools/mathTools.js";
+import { currencySymbol, formatValueTo2Digit, formatValueToMoney, randomNumber } from "../../tools/mathTools.js";
 import ProductAddOn from "./components/productAddOn";
 
 import AccountSelects from "./components/accountsSelects";
@@ -79,6 +79,7 @@ function RegisterExpenses(){
     
     // expense register object
     const expenseRegister = {
+        expenseHash: randomNumber(7),
         products: purchaseProductList,
         store: expenseStore,
         accountId: expenseAccountId,
@@ -184,10 +185,12 @@ function RegisterExpenses(){
     function getProductsFromCatalog(products){
         if(productsCatalog && products){
             let list = [];
+            console.log("pc: ", productsCatalog)
             products.forEach( (key, i) => {
                 let product = productsCatalog.find( ({id}) => id == key)
                 if(product){
-                    list.push(<div key={i} className="product-name">{product.Name}  <span className="product-price">{product.LastPrice}{expenseBankCurrency}</span></div>);
+                    // list.push(<div key={i} className="product-name">{product.Name}  <span className="product-price">{product.LastPrice}{expenseBankCurrency}</span></div>);
+                    list.push(<div key={i} className="product-name">{product.Name} </div>);
                 } else {
                     return "No data avaliable..."
                 }
@@ -223,6 +226,7 @@ function RegisterExpenses(){
                 )
             // if there are expenses, draw the list
             } else {
+                
                 setListExpenses(
                     expensesCatalog.map( key => ( 
                         <li key={key.id}>  
@@ -284,6 +288,8 @@ function RegisterExpenses(){
     async function registerExpense(){
         setReturningAlerts(<Loader type="fullscreen" /> )
         setPurchaseProductList(<Loader />)
+        console.log(expenseRegister)
+        
         await expenseRegisterProcess(expenseRegister, productsCatalog).then(
             (response) => {
                 setReturningAlerts(
@@ -297,7 +303,7 @@ function RegisterExpenses(){
                     window.location.href = "/expenses"
                 }, 4000)
             }
-        )
+        ) 
     };
 
 

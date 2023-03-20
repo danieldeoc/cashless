@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.86 - add money to account added, sessionstorage bug fixes, product delete: fixed bug: do not allow product delet if an expense exist
 - 0.0.85 - register process created, login process created, dashboard created, block on fisical money delete, account settup created, accounts, products, setttings and expenses firebase reference fixed to user ref id,
 - 0.0.84 - pricehistory screen created, account history screen created, login and register page created, home page inserted, dashboard inserted
 - 0.0.83 - expense, products anda accounts empty result list bug fix, autocomplete bug fixes, empty screen added for no categories or accounts setted, expense delte process added (deletes expense, deletes bank account movment and updates balance, deletes product history price register)
@@ -15,6 +16,18 @@ App developed for my to manange my finances
 - 0.0.4 - Expense register added, first beta version
 
 ## task list
+Session
+- change session storage to cookies
+
+Categories
+- on add subcategorie alert gets null in message (use useref)
+
+
+
+expenses
+- add unitary price in product listage
+- add product price history is duplicated
+
 Bank Account register
 - Do not allow to delet if there are movments
 - create an option to close the account if there are movments

@@ -19,30 +19,38 @@ function ProductPriceHistory(){
         const urlParams = new URL(window.location.href).searchParams;
         
         function listHistory(response){
-            setPriceListHistory(
-                response.map( (key, i) => (
-                    <li key={i}>
-                        {getDate(key.CreatedAt)}
-                        <span className="table-list-right-side table-list-currency no-margin">
-                            {formatValueTo2Digit(key.Price)} {currencySymbol("Euro")}
-                        </span>
-                        <div className="li-container">
-                            <span className="li-container-label">
-                                Amount purchased:<br/>
-                                <strong>{key.Amount}</strong>
+
+            if( response[0] == "No prices rsgitered yet."){
+                setPriceListHistory(<div className="empty-page">{response[0]}</div>)
+            } else {
+
+                setPriceListHistory(
+                    response.map( (key, i) => (
+                        <li key={i}>
+                            {getDate(key.CreatedAt)}
+                            <span className="table-list-right-side table-list-currency no-margin">
+                                {formatValueTo2Digit(key.Price)} {currencySymbol("Euro")}
                             </span>
-                            <span className="li-container-label">
-                                Store:<br/>
-                                <strong>{key.Store}</strong>
-                            </span>
-                            <span className="li-container-label">
-                                Total purchased:<br/>
-                                <strong>{key.TotalPrice}</strong>
-                            </span>
-                        </div>
-                    </li>
-                ))
-            );
+                            <div className="li-container">
+                                <span className="li-container-label">
+                                    Amount purchased:<br/>
+                                    <strong>{key.Amount}</strong>
+                                </span>
+                                <span className="li-container-label">
+                                    Store:<br/>
+                                    <strong>{key.Store}</strong>
+                                </span>
+                                <span className="li-container-label">
+                                    Total purchased:<br/>
+                                    <strong>{key.TotalPrice}</strong>
+                                </span>
+                            </div>
+                        </li>
+                    ))
+                );
+
+            }
+
         
         }
 

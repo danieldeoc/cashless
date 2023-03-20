@@ -63,7 +63,9 @@ $transition: all 500ms ease-in-out;
 html, body {
   background-color: $bg;
 }
-body{ padding-bottom: $lg; min-width: 320px;}
+body{ padding-bottom: $lg; min-width: 320px;
+  max-width: 440px;
+  margin: 0 auto;}
 
 @media screen and (max-width: 440px) {
   body{ padding: 0 $sm;}

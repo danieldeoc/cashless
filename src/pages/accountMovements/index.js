@@ -32,22 +32,21 @@ function AccountMovements(props){
                 history.map(
                     (key, i) => (
                         <li key={i}>
-                        {getDate(key.CreatedAt)}
-    
-                        <span className="table-list-right-side table-list-currency no-margin">
-                            {formatValueTo2Digit(key.NewBalance)} {currencySymbol("Euro")}
-                        </span>
-                        <div className="li-container">
-                            <span className="li-container-label">
-                                Movement type:<br/>
-                                <strong>{key.Type}</strong>
+                            {getDate(key.CreatedAt)}
+                            <span className="table-list-right-side table-list-currency no-margin">
+                                {formatValueTo2Digit(key.NewBalance)} {currencySymbol("Euro")}
                             </span>
-                            <span className="li-container-label">
-                                Total:<br/>
-                                <strong>{key.Value}</strong>
-                            </span>
-                        </div>
-                    </li>
+                            <div className="li-container">
+                                <span className="li-container-label">
+                                    Movement type:<br/>
+                                    <strong>{key.Type}</strong>
+                                </span>
+                                <span className="li-container-label">
+                                    Total:<br/>
+                                    <strong>{formatValueTo2Digit(key.Value)}</strong>
+                                </span>
+                            </div>
+                        </li>
                     )
                 )
             );

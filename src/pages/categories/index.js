@@ -65,10 +65,10 @@ function CategoriesSettings(){
         setReturningAlerts(null);
     }
 
-    function confirmSubCatDelete(id, subKey){
-        setReturningAlerts(null);
+    async function confirmSubCatDelete(id, subKey){
+        setReturningAlerts("");
         setListOfCategories(<Loader />)
-        deleteSubCateory(id, subKey, categoriesCatalog).then(performPageDraw)
+        await deleteSubCateory(id, subKey, categoriesCatalog).then(performPageDraw)
     };
     
     // update categories page

@@ -7,6 +7,7 @@ import PageTitle from "../../components/elements/texts/pageTitle";
 import SectionTitle from "../../components/elements/texts/sectionTitle";
 import { Link } from "react-router-dom";
 import Loader from "../../components/elements/loader";
+import { formatValueTo2Digit } from "../../tools/mathTools";
 
 
 function Dashboard(){
@@ -27,7 +28,6 @@ function Dashboard(){
             await getAccountsCatalog().then(
                 (response) => {
                     setAccountsCatalog(response);
-                    console.log(response)
                 }
             )
         }
@@ -39,16 +39,21 @@ function Dashboard(){
         return <Link to={link}>Check movements</Link>
     }
 
+    function returnAddFundsLink(id){
+        const link = "/bankaccounts/movements/addmoney?accountId="+id;
+        return <Link to={link}>Add money</Link>
+    }
+
     const accountsCatalogAvaliable = useEffect( () => {
         if(accountsCatalog) {
             console.log(accountsCatalog, accountsCatalog.length)
             if(accountsCatalog.length > 0){
                 setAccountsList(
-                    accountsCatalog.map( (key) => (
-                        <div className="card">
+                    accountsCatalog.map( (key, i) => (
+                        <div className="card" key={i}>
                             <h3>{key.Name}</h3>
-                            <span className="balance">{key.CurrencySymbol} {key.CurrentFunds}</span>
-                            {returnAccountLink(key.id)}
+                            <span className="balance">{key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds)}</span>
+                            {returnAccountLink(key.id)} {returnAddFundsLink(key.id)}
                         </div>
                     ))
                 )

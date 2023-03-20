@@ -63,7 +63,8 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                             store: expenses.store,
                             paymenMethod: expenses.paymenMethod,
                             account: expenses.account,
-                            CreatedAt: serverTimestamp()
+                            CreatedAt: serverTimestamp(),
+                            Hash: expenses.expenseHash
                         }
                         //and add its to firebase
                         await expenseRegistration(newExpense).then( 
@@ -79,7 +80,8 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                                     PayMethod: expenses.paymenMethod,
                                     LastBalance: settedAccount.CurrentFunds,
                                     NewBalance: (settedAccount.CurrentFunds - expenses.totalExpense),
-                                    Expense: expenseId
+                                    Expense: expenseId,
+                                    Hash: expenses.expenseHash
                                 }
                                 ///////////////////////////////////
                                 // add new balance to firebase
@@ -126,7 +128,8 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                                 Price: product.Price,
                                 Amount: product.Amount,
                                 TotalPrice: product.TotalPrice,
-                                Store: expenses.store
+                                Store: expenses.store,
+                                Hash: expenses.expenseHash
                             }
                             await addProductPriceHistory(priceHistoryItem, docId).then(
                                 async (response) => {
@@ -186,7 +189,8 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                                                 Price: product.Price,
                                                 Amount: product.Amount,
                                                 TotalPrice: product.TotalPrice,
-                                                Store: expenses.store
+                                                Store: expenses.store,
+                                                Hash: expenses.expenseHash
                                             }
                                             // and add its to the firebase
                                             await addProductPriceHistory(priceHistoryItem, productIdResponse)

@@ -102,22 +102,40 @@ export async function deleteProductFromCatalog(id){
 
     await getExpensesCatalog(queryOptions).then(
         async (avaliableExpenses) => {
-            console.log(avaliableExpenses, avaliableExpenses.length)
-            if(avaliableExpenses.length > 0){
-                response = returnMessage("This product cannot be deleted because there are expenses registered with it.", "error")
-                console.log(response)
-            } else {
-                const ref = doc(db, userDb, superDoc, collectionRef, id);
-                await deleteDoc(ref).then(
-                    (res) => {
-                        console.warn("Document deleted");
-                        response = returnMessage("Product deleted");
+            console.log("dp: ", avaliableExpenses[0], id, avaliableExpenses, avaliableExpenses.length)
+            
+            let belongs = [];
+            
+            if(avaliableExpenses[0] != "No expenses registered yet"){
+                avaliableExpenses.forEach( (key) => {
+                    if(key.products.includes(id)){
+                        belongs.push(key.id)
                     }
-                    ).catch( (err) => {
-                        console.error(err);
-                        response = returnMessage("Error"+err, "error")
-                    })
-            };
+                }) 
+            }
+
+
+            if(belongs.length == 0 || avaliableExpenses[0] == "No expenses registered yet"){
+
+                
+                if(belongs.length == 0){
+                  
+                    const ref = doc(db, userDb, superDoc, collectionRef, id);
+                    await deleteDoc(ref).then(
+                        (res) => {
+                            console.log("4")
+                            console.warn("Document deleted");
+                            response = returnMessage("Product deleted");
+                        }
+                        ).catch( (err) => {
+                            console.error(err);
+                            response = returnMessage("Error"+err, "error")
+                        })
+                }            
+
+            } else {
+                response = returnMessage("This product cannot be deleted because there are expenses registered with it.", "error")
+            }
         });   
     return response;
 }
@@ -189,7 +207,11 @@ export async function getProductPriceHistory(productId){
                 results.push( {...doc.data(), id: doc.id} )
             });
         }
-    ).catch( err => console.log(err) )
+    ).catch( err => console.log(err) ).finally(() => {
+        if(results.length == 0){
+            results.push(["No prices rsgitered yet."])
+        }
+    })  
     return results;
 }
 

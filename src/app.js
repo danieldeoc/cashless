@@ -17,6 +17,7 @@ import RegisterPage from './pages/register';
 import LoginPage from './pages/login';
 import HomePage from "./pages/homePage";
 import SetUpAccounts from "./pages/register/setUp";
+import AddMoney from "./pages/addMoney";
 
 function App(){
 
@@ -49,6 +50,7 @@ function App(){
 
                 <Route path="/bankaccounts" element={<BankAccounts /> } />
                 <Route path="/bankaccounts/movements" element={<AccountMovements /> } />
+                <Route path="/bankaccounts/movements/addmoney" element={<AddMoney /> } />
                 
                 <Route path="/expenses" element={<RegisterExpenses /> } />
                 <Route path="/expenses/registernotavaliable" element={<ExpenseRegistrationNotAvaliable /> } />

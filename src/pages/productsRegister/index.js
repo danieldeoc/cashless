@@ -70,10 +70,10 @@ function ProductsCatalog(){
     ////////////////////////////////////////////////
     // DELETE ACTIONS
     ////////////////////////////////////////////////
-    function confirmeProductDelete(id){
+    async function confirmeProductDelete(id){
         setReturningAlerts(null);
         setProductCatalogList(loader);
-        deleteProductFromCatalog(id).then( 
+        await deleteProductFromCatalog(id).then( 
             (response) => {
                 console.log("res", response)
                 setReturningAlerts(
