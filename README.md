@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.87 - text label bug fixes, android app test version added (ionic and capacitor)
 - 0.0.86 - add money to account added, sessionstorage bug fixes, product delete: fixed bug: do not allow product delet if an expense exist
 - 0.0.85 - register process created, login process created, dashboard created, block on fisical money delete, account settup created, accounts, products, setttings and expenses firebase reference fixed to user ref id,
 - 0.0.84 - pricehistory screen created, account history screen created, login and register page created, home page inserted, dashboard inserted
@@ -16,6 +17,10 @@ App developed for my to manange my finances
 - 0.0.4 - Expense register added, first beta version
 
 ## task list
+Add money
+- redirect after adds
+
+
 Session
 - change session storage to cookies
 
@@ -36,6 +41,8 @@ Bank Account register
 - remove page reload on add bank account
 
 
+categories
+- bug in adding subcategories
 
 Product Catalog
 - does not allow delet if product exists in: expense list

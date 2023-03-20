@@ -1,9 +1,8 @@
 {
-    "appId": "io.ionic.cashless",
-    "appName": "Cashless",
-    "bundledWebRuntime": false,
-    "npmClient": "npm",
-    "webDir": "build",
-    "cordova": {}
-  }
-  
+  "appId": "io.ionic.cashless",
+  "appName": "cashless",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "cordova": {}
+}

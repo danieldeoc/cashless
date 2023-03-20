@@ -10,6 +10,7 @@
 
 # production
 /build
+/_apks
 
 # misc
 .DS_Store

@@ -34,8 +34,8 @@ function LoginPage(){
                 <Input 
                     type="password"
                     id="password"
-                    label="Your e-mail:"
-                    placeholder="Insert your e-mail"
+                    label="Your password:"
+                    placeholder="Insert your password"
                     value={userPass}
                     onChangeHandler={(result) => { 
                         setUserPass(result)
