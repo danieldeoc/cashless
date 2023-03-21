@@ -67,12 +67,67 @@ body{ padding-bottom: $lg; min-width: 320px;
   max-width: 440px;
   margin: 0 auto;}
 
+.termsShowUp{
+  font-size: 1rem; color: $gray2;
+  margin-bottom: $md;
+  display: block;
+}
+
 @media screen and (max-width: 440px) {
   body{ padding: 0 $sm;}
   
 }
 
 * { font-family: 'Lato', Helvetica, Arial, 'Roboto', sans-serif; outline: none; }
+
+
+////////////////////////////////////////////////////////
+/// header
+.app-container{ padding-top: 50px;}
+
+header{
+  background-color: $white;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: $md;
+  box-sizing: border-box;
+  width: 100%;
+  box-shadow: $box-shadow;
+  text-align: center;
+  font-weight: bold;
+  color: $darken;
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  z-index: 1000;
+}
+
+header .menu{
+  float: right;
+}
+
+.navigator{
+  display: none;
+  position:absolute;
+  left: 0;
+  top: 0; bottom: 0;
+  width: 80%;
+  box-sizing: border-box;
+  background: $white;
+  z-index: 100;
+  box-shadow: $box-shadow;
+}
+.navigator.show{
+  display: block;
+}
+
+.navigator a{
+  display: block;
+  font-size: 1.3rem;
+  color: $darken;
+  text-decoration: none;
+  padding: $md;
+}
 
 ////////////////////////////////////////////////////////
 /// PAGE STYLES
@@ -133,15 +188,37 @@ body{ padding-bottom: $lg; min-width: 320px;
   cursor: pointer;
   padding: $md $lg;
   text-align: center;
-  border-radius: $border-radius;
+  border-radius: 60px;
   margin-bottom: $md;
   border: none;
 
+  font-size: 1.2rem;
   text-transform: uppercase;
   color: $dark;
-  font-weight: bold;
+  font-weight: normal;
   transition: $transition;
 }
+
+.miniBtn{
+  display: inline-block;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: $sm $lg;
+  text-align: center;
+  border-radius: 60px;
+  margin-bottom: $md;
+  border: none;
+
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: $white;
+  font-weight: normal;
+  transition: $transition;
+  background-color: $clearBlue;
+  text-decoration: none;
+}
+
+.miniBtn.no-margin{ margin-bottom: 0;}
 
 .btn.primary{
   background-color: $blue;
@@ -178,6 +255,26 @@ body{ padding-bottom: $lg; min-width: 320px;
   transition: $transition;
 }
 
+
+.btn.primary.purple{
+  background-color: $purple;
+  color: $white;
+}
+.btn.primary.purple:hover,
+.btn.primary.purple:focus{
+  background-color: $purple;
+  color: rgba(255,255,255,0.6);
+  transition: $transition;
+}
+
+.bottom-box-align{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  box-sizing: border-box;
+  padding: $lg;
+}
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 /// FORMS
@@ -558,18 +655,29 @@ border-bottom: 1px solid $gray1;}
 .card h3{
   margin: 0 0 $sm;
   color: $darkClearBlue;
-  font-weight: 900;
+  font-weight: 400;
+  font-size: 1.6rem;
 }
 
 .card .balance{ display: block;
-  padding: $sm 0;
+  padding: 0 0 $lg 0;
 
   color: $purple;
   font-weight: 400;
   font-size: 1.8rem;}
 
-.card a{
-  color: $lightGreen;
-  font-weight: 400;
-  display: block;
+  
+
+
+  .homeIntroSplash{
+    max-width: 600px;
+    width: 100%;
+    margin: $lg auto;
+  }
+
+
+.goBack a{
+  color: $darken;
+  text-decoration: none;
+
 }

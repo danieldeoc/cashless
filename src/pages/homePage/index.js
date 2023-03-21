@@ -1,6 +1,8 @@
 import React from "react";
 import PrimaryButton from "../../components/elements/buttons/primaryButton";
 
+import homeintro from "../../images/home-intro.svg"
+
 function HomePage(){
 
     function goToLogin(){
@@ -12,15 +14,19 @@ function HomePage(){
 
     return(
         <>
-            Home page
+            <img src={homeintro} className="homeIntroSplash" alt="Cashless: finances for those with few money" />
 
-            <PrimaryButton
-                    label="Sign-In"
-                    onClickHandler={goToLogin} /> 
+            <div className="bottom-box-align">
+                <PrimaryButton
+                        label="Sign-In"
+                        classes="purple"
+                        onClickHandler={goToLogin} /> 
 
-            <PrimaryButton
-                    label="Sign-Up"
-                    onClickHandler={goToRegister} /> 
+                <PrimaryButton
+                        label="Sign-Up"
+                        classes="green"
+                        onClickHandler={goToRegister} /> 
+            </div>
         </>
     )
 }

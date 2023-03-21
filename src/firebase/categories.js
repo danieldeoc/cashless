@@ -111,25 +111,25 @@ export async function addNewCategory(catalog, data){
 // Add New SubCategory
 /* ########################## */
 export async function addNewSubCategory(level, catalog, data){
+    let result;
     if( data !== undefined){       
         const category = catalog.find( ({Name}) => Name == level);
             const id = category.id;
             var childs = category.Childs;
             if(childs === undefined || childs == "" ){
                 var childs = [];
-            }
-            childs.push(data)
-            console.log(id, childs, data)
-            
+            }            
             const ref = doc(db, userDb, superDoc, collectionRef, id);
             await updateDoc( ref, {
                 Childs: childs
             }).then((res) => {
                 console.warn("SubCategories updated", res)
+                result = returnMessage("Subcategory added")
             })
     } else {
         alert("You need to define a name for the subcategory")
     }
+    return result;
 }
 
 

@@ -28,8 +28,8 @@ function SetUpAccounts(){
                     Childs: ["Car", "Fuel", "Maintence"]
                 },
                 {
-                    Name: "Restaurants and Snacks",
-                    Childs: ["Lunchs", "Breakfast", "Coffee", "Snack", "Dinner"]
+                    Name: "Food and Snacks",
+                    Childs: ["Lunchs", "Breakfasts", "Drinks", "Coffees", "Snacks", "Dinners"]
                 },
                 {
                     Name: "Comunication",

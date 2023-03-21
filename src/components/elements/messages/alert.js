@@ -19,8 +19,10 @@ function Alert(props){
         setTimeout( () => {
             alertBox.current.classList.add("display")
             setTimeout( () => {
-                alertBox.current.classList.remove("display")
-            }, 5000)
+                if(alertBox){
+                    alertBox.current.classList.remove("display")
+                }
+            }, 3000)
         }, 1000)
     }
     

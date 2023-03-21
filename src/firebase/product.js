@@ -102,7 +102,7 @@ export async function deleteProductFromCatalog(id){
 
     await getExpensesCatalog(queryOptions).then(
         async (avaliableExpenses) => {
-            console.log("dp: ", avaliableExpenses[0], id, avaliableExpenses, avaliableExpenses.length)
+            //console.log("dp: ", avaliableExpenses[0], id, avaliableExpenses, avaliableExpenses.length)
             
             let belongs = [];
             
@@ -123,7 +123,7 @@ export async function deleteProductFromCatalog(id){
                     const ref = doc(db, userDb, superDoc, collectionRef, id);
                     await deleteDoc(ref).then(
                         (res) => {
-                            console.log("4")
+                            
                             console.warn("Document deleted");
                             response = returnMessage("Product deleted");
                         }
@@ -146,7 +146,7 @@ export async function addProductPriceHistory(data, id){
     let ref = collection(db, userDb, superDoc, collectionRef, id, "price_history");
     await addDoc(ref, data)
         .then((res) => {
-            console.log(res)
+            
             console.log("New history added")
         }).catch( err => console.log(err))
 

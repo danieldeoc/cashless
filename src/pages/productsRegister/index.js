@@ -216,7 +216,16 @@ function ProductsCatalog(){
     }  
     
 
-
+    function eraseFields(){
+        setProductName(undefined)
+        setProductCategory(undefined)
+        setProductSubCategory(undefined)
+        setProductAmmountType(undefined)
+        document.getElementById("product_name").value = ""
+        document.getElementById("categories").value = categoryCatalog[0].Name;
+        changeSubCategories(categoryCatalog[0].Name)
+        document.getElementById("ammountType").value = unitsCatalog[0];
+    }
 
     //////////////////////////////
     // Creates a new product catalog
@@ -230,7 +239,7 @@ function ProductsCatalog(){
             setReturningAlerts(<Loader type="fullscreen" /> )
             setProductCatalogList(loader)
             addProductToCatalog(newProduct).then(
-                (response) => {
+                async (response) => {
                     setReturningAlerts(
                         <Alert
                             message={response.message}
@@ -238,7 +247,9 @@ function ProductsCatalog(){
                             display={response.display}
                             />
                     );
-                    getCatalogs();
+                    eraseFields();
+
+                    await getCatalogs()
                 }
             )
         } else {

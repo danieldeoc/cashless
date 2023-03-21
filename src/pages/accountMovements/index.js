@@ -8,6 +8,9 @@ import { getDate } from "../../tools/dateTools";
 import { currencySymbol, formatValueTo2Digit } from "../../tools/mathTools";
 import { getAccount, getAccountBalanceHistory } from "../../firebase/accounts";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import {Link} from "react-router-dom";
 
 function AccountMovements(props){
 
@@ -92,6 +95,11 @@ function AccountMovements(props){
     return(
         <>
             <PageTitle text={title} />
+            <div className="goBack">
+                <Link to="/bankaccounts">
+                    <FontAwesomeIcon icon={faArrowLeft} /> Back
+                </Link>
+            </div>
             <PageBox>
                 <SectionTitle text="Account balance" />
                 <ul className="table-list">

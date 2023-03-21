@@ -18,45 +18,49 @@ import LoginPage from './pages/login';
 import HomePage from "./pages/homePage";
 import SetUpAccounts from "./pages/register/setUp";
 import AddMoney from "./pages/addMoney";
+import { getAuthCredentias } from "./firebase/auth";
+import Header from "./components/elements/header";
 
 function App(){
-
-    const [userID, setUserId] = useState(undefined)
-    const [userName, setUserName] = useState(undefined)
-    const [userEmail, setUserEmail] = useState(undefined)
+    const [menu, setMenu] = useState(undefined)
      
     useEffect( () => {
         
-    })
-
+        const logged = getAuthCredentias()
+        if(logged.id){
+            setMenu(<Header />)
+        }
+    }, [])
 
     return(
-        <Router>
-            <Navigator />
-            <Routes>                
-                <Route  path="/" element={<HomePage />} />
-                <Route  path="/dashboard" element={<Dashboard />} />
-                
-                <Route  path="/register" element={<RegisterPage />} />
+        <div className="app-container">
+            <Router>
+                {menu}
+                <Routes>                
+                    <Route  path="/" element={<HomePage />} />
+                    <Route  path="/dashboard" element={<Dashboard />} />
+                    
+                    <Route  path="/register" element={<RegisterPage />} />
 
-                <Route  path="/register/setup" element={<SetUpAccounts />} />
+                    <Route  path="/register/setup" element={<SetUpAccounts />} />
 
-                <Route  path="/login" element={<LoginPage />} />
-                
-                <Route  path="/products" element={<ProductsCatalog />} />
-                <Route  path="/products/priceHistory" element={<ProductPriceHistory />} />
-                
-                <Route path="/categories" element={<CategoriesSettings /> } />
+                    <Route  path="/login" element={<LoginPage />} />
+                    
+                    <Route  path="/products" element={<ProductsCatalog />} />
+                    <Route  path="/products/priceHistory" element={<ProductPriceHistory />} />
+                    
+                    <Route path="/categories" element={<CategoriesSettings /> } />
 
-                <Route path="/bankaccounts" element={<BankAccounts /> } />
-                <Route path="/bankaccounts/movements" element={<AccountMovements /> } />
-                <Route path="/bankaccounts/movements/addmoney" element={<AddMoney /> } />
-                
-                <Route path="/expenses" element={<RegisterExpenses /> } />
-                <Route path="/expenses/registernotavaliable" element={<ExpenseRegistrationNotAvaliable /> } />
-                
-            </Routes>
-        </Router> 
+                    <Route path="/bankaccounts" element={<BankAccounts /> } />
+                    <Route path="/bankaccounts/movements" element={<AccountMovements /> } />
+                    <Route path="/bankaccounts/movements/addmoney" element={<AddMoney /> } />
+                    
+                    <Route path="/expenses" element={<RegisterExpenses /> } />
+                    <Route path="/expenses/registernotavaliable" element={<ExpenseRegistrationNotAvaliable /> } />
+                    
+                </Routes>
+            </Router> 
+        </div>
     )
 }
 

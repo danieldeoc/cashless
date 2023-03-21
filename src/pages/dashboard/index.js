@@ -36,14 +36,10 @@ function Dashboard(){
 
     function returnAccountLink(id){
         const link = "/bankaccounts/movements?accountId="+id;
-        return <Link to={link}>Check movements</Link>
+        return <Link className="miniBtn no-margin" to={link}>Check movements</Link>
     }
 
-    function returnAddFundsLink(id){
-        const link = "/bankaccounts/movements/addmoney?accountId="+id;
-        return <Link to={link}>Add money</Link>
-    }
-
+   
     const accountsCatalogAvaliable = useEffect( () => {
         if(accountsCatalog) {
             console.log(accountsCatalog, accountsCatalog.length)
@@ -53,7 +49,7 @@ function Dashboard(){
                         <div className="card" key={i}>
                             <h3>{key.Name}</h3>
                             <span className="balance">{key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds)}</span>
-                            {returnAccountLink(key.id)} {returnAddFundsLink(key.id)}
+                            {returnAccountLink(key.id)}
                         </div>
                     ))
                 )

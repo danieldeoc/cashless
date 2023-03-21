@@ -82,14 +82,9 @@ function RegisterPage(){
                     }}
                     />  
 
-                <CheckBoxGroups
-                    id="ckGroup_1"
-                    data={terms}
-                    OnClickHandler={res => ""} />
-                {acceptedTerms}
-                <div>
+                <div className="termsShowUp" >
                     <input type="checkbox"
-                        onChange={() => { setAcceptedTerms(true) }} /><span className="termsShowUp" onClick={() => { showModal("termsAndConditions") }}>I've read and accepted the terms and conditions.</span>
+                        onChange={() => { setAcceptedTerms(true) }} /><span onClick={() => { showModal("termsAndConditions") }}>I've read and accepted the terms and conditions.</span>
                 </div>
 
                 <ModalOverlay

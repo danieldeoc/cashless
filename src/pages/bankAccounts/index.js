@@ -251,6 +251,13 @@ function BankAccounts(){
                                         />
                                 );
                                 getAccountsCatalog().then( (res) => {
+                                    setBankName("")
+                                    setInitialDeposit("")
+                                    setBankCurrency("Euro")
+                                    setBankCurrencySymbol("€")
+                                    setBankStatus(true)
+                                    setBankPaymentsMethods([])
+
                                     setAccountsCatalog(res);
                                 })
                             })                        

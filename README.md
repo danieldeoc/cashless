@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.88 - header and navigator menu added, categories page bug fixes, product page fields clean up after register, 
 - 0.0.87 - text label bug fixes, android app test version added (ionic and capacitor)
 - 0.0.86 - add money to account added, sessionstorage bug fixes, product delete: fixed bug: do not allow product delet if an expense exist
 - 0.0.85 - register process created, login process created, dashboard created, block on fisical money delete, account settup created, accounts, products, setttings and expenses firebase reference fixed to user ref id,

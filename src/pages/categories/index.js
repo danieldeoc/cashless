@@ -47,6 +47,14 @@ function CategoriesSettings(){
     }, []);
 
     function performPageDraw(){
+        setMainCategory("Main")
+        setNewCategoryName("")
+        newCategory.Childs = [];
+
+        document.getElementById("newCategoryName").value = "";
+        document.getElementById("fatherOptions").value = "Main";
+        
+
         getCategoriesCatalog().then( (catalog) => {
             setCategoriesCatalog(catalog);
             updatePageList(catalog)
@@ -143,6 +151,7 @@ function CategoriesSettings(){
                 <SectionTitle text="Add a new Category" />                
 
                 <Input 
+                    id="newCategoryName"
                     type="text"
                     label="Category name:"
                     placeholder="Insert a name"
@@ -182,9 +191,18 @@ function CategoriesSettings(){
                                 }
                             )
                         } else {
-                            addNewSubCategory(mainCategory, categoriesCatalog, newCategoryName).then( () => {
-                                performPageDraw();
-                            });
+                            addNewSubCategory(mainCategory, categoriesCatalog, newCategoryName).then(
+                                (response) => {
+                                    setReturningAlerts(
+                                        <Alert
+                                            message={response.message}
+                                            classes={response.classes}
+                                            display={response.display}
+                                            />
+                                    )
+                                    performPageDraw();
+                                }
+                            );
                         }
                         }} />                    
             </PageBox>
