@@ -147,7 +147,7 @@ export async function deletBankAccount(id){
         async (res) => {
             if(res != null && res.length > 0){
                 console.log("not del", res);
-                response = returnMessage("Account can not be deleted because there are movments on it.", "warning");
+                response = returnMessage("Account can not be deleted because there are movments on it.", "error");
             } else {
                 console.log("del", res);
                 const docRef = doc(db, userDb, superDocRef, collectionRef, id);

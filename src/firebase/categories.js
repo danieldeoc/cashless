@@ -114,11 +114,13 @@ export async function addNewSubCategory(level, catalog, data){
     let result;
     if( data !== undefined){       
         const category = catalog.find( ({Name}) => Name == level);
+        console.log(level, catalog, data, category)
             const id = category.id;
             var childs = category.Childs;
             if(childs === undefined || childs == "" ){
                 var childs = [];
             }            
+            childs.push(data)
             const ref = doc(db, userDb, superDoc, collectionRef, id);
             await updateDoc( ref, {
                 Childs: childs

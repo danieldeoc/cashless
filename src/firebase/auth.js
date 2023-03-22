@@ -60,6 +60,7 @@ export function getAuthCredentias(){
     credentials.id = sessionStorage.getItem('User Auth')
     credentials.name = sessionStorage.getItem('User Name')
     credentials.email = sessionStorage.getItem('User E-mail')
+    console.log(credentials)
     return credentials;
 }
 

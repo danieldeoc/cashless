@@ -110,6 +110,9 @@ function AddMoney(props){
                                         display={response.display}
                                         />
                                 );
+                                setTimeout( () => {
+                                    window.location.href = "/bankaccounts"
+                                }, 3000)
                             })
 
                         }} /> 

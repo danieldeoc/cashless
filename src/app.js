@@ -20,20 +20,23 @@ import SetUpAccounts from "./pages/register/setUp";
 import AddMoney from "./pages/addMoney";
 import { getAuthCredentias } from "./firebase/auth";
 import Header from "./components/elements/header";
+import Footer from "./footer";
 
 function App(){
     const [menu, setMenu] = useState(undefined)
+    const [padTop, setPadTop] = useState("")
      
     useEffect( () => {
         
         const logged = getAuthCredentias()
         if(logged.id){
             setMenu(<Header />)
+            setPadTop("app-container")
         }
     }, [])
 
     return(
-        <div className="app-container">
+        <div className={padTop}>
             <Router>
                 {menu}
                 <Routes>                
@@ -60,6 +63,7 @@ function App(){
                     
                 </Routes>
             </Router> 
+            <Footer />
         </div>
     )
 }

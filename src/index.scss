@@ -108,10 +108,11 @@ header .menu{
 
 .navigator{
   display: none;
-  position:absolute;
+  position:fixed;
   left: 0;
   top: 0; bottom: 0;
   width: 80%;
+  height: 100%;
   box-sizing: border-box;
   background: $white;
   z-index: 100;
@@ -119,6 +120,7 @@ header .menu{
 }
 .navigator.show{
   display: block;
+  padding-top: 65px;
 }
 
 .navigator a{
@@ -475,6 +477,7 @@ border-bottom: 1px solid $gray1;}
   border-radius: $border-radius;
 }
 
+
 .table-list li{
   border-bottom: 1px solid $gray1;
   padding: $md;
@@ -493,6 +496,10 @@ border-bottom: 1px solid $gray1;}
 
 .table-list li:last-child{
   border: none;
+}
+
+.table-list .table-subline{
+  padding: $sm 0;
 }
 
 .table-list li > ul{
@@ -680,4 +687,15 @@ border-bottom: 1px solid $gray1;}
   color: $darken;
   text-decoration: none;
 
+}
+
+
+footer{
+  text-align: center;
+  padding: $lg 0;
+}
+
+footer a{
+  color: $darken;
+  text-decoration: underline;
 }

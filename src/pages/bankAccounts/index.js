@@ -43,6 +43,8 @@ function BankAccounts(){
     const [currencyOptions, setCurrencyOptions] = useState(undefined);
     const [listBankAccounts, setListBankAccounts] = useState(<Loader />);
 
+    
+
     const newBankAccount = {
         Name: bankName,
         InitialDeposit: initialDeposit,
@@ -71,6 +73,8 @@ function BankAccounts(){
         getCurrecyCatalog().then( (res) => {
             setCurrencyCatalog(res)
         })
+
+        
     }, []);
 
     const updateAccountCatalog = useEffect(() => {
@@ -104,7 +108,7 @@ function BankAccounts(){
                                     if(key.Name != "Paper Money"){
                                         setReturningAlerts(
                                             <ConfirmDialog 
-                                                message="Do you realy want to delete this subcategory?"
+                                                message="Do you realy want to delete this account?"
                                                 onConfirmHandler={() => { 
                                                     deleteBankAccountCall(key.id, key.Name)
                                                 }}
@@ -121,7 +125,11 @@ function BankAccounts(){
                             <span className="fundsDisplay">
                                 {key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds) }
                             </span>
-    
+                            
+                            <div className="table-subline">
+                                <Link className="miniBtn no-margin" to={`/bankaccounts/movements/addmoney?accountId=${key.id}`}>Add money</Link>
+                            </div>
+
                             <div className="li-container">
                                 <span className="li-container-label">
                                     <strong>Curerncy:</strong> <br/>

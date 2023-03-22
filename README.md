@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.89 - categories bug fix, account bug fix, add money link added, css styles added, link to support added
 - 0.0.88 - header and navigator menu added, categories page bug fixes, product page fields clean up after register, 
 - 0.0.87 - text label bug fixes, android app test version added (ionic and capacitor)
 - 0.0.86 - add money to account added, sessionstorage bug fixes, product delete: fixed bug: do not allow product delet if an expense exist
@@ -18,9 +19,6 @@ App developed for my to manange my finances
 - 0.0.4 - Expense register added, first beta version
 
 ## task list
-Add money
-- redirect after adds
-
 
 Session
 - change session storage to cookies
@@ -35,21 +33,12 @@ expenses
 - add product price history is duplicated
 
 Bank Account register
-- Do not allow to delet if there are movments
+
 - create an option to close the account if there are movments
 - get only open accounts
 - set bank currency symbol
 - remove page reload on add bank account
 
-
-categories
-- bug in adding subcategories
-
-Product Catalog
-- does not allow delet if product exists in: expense list
-
-Dashboard
-- Create bank balance overviews
 
 Expense register
 - cannot register an expense in insufient funds
@@ -58,10 +47,6 @@ Expense register
 # Add Interface
 
 # Add Login and register
-- login page
-- register page
-- home page
-- database user collection
 
 # code review
 - review react code

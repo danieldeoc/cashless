@@ -174,11 +174,11 @@ function CategoriesSettings(){
 
                 <PrimaryButton
                     label="Add New Category"
-                    onClickHandler={() => { 
+                    onClickHandler={async () => { 
                         setReturningAlerts(<Loader type="fullscreen" /> )
                         setListOfCategories(<Loader />)
                         if(mainCategory == "Main"){
-                            addNewCategory(categoriesCatalog, newCategory).then(
+                            await addNewCategory(categoriesCatalog, newCategory).then(
                                 (response) => {
                                     setReturningAlerts(
                                         <Alert
@@ -191,7 +191,7 @@ function CategoriesSettings(){
                                 }
                             )
                         } else {
-                            addNewSubCategory(mainCategory, categoriesCatalog, newCategoryName).then(
+                            await addNewSubCategory(mainCategory, categoriesCatalog, newCategoryName).then(
                                 (response) => {
                                     setReturningAlerts(
                                         <Alert

@@ -5,7 +5,7 @@ import PageTitle from "../../components/elements/texts/pageTitle";
 import SectionTitle from "../../components/elements/texts/sectionTitle";
 import Loader from "../../components/elements/loader";
 import { getDate } from "../../tools/dateTools";
-import { currencySymbol, formatValueTo2Digit } from "../../tools/mathTools";
+import { currencySymbol, formatValueTo2Digit, formatValueToMoney } from "../../tools/mathTools";
 
 function ProductPriceHistory(){
 
@@ -42,7 +42,7 @@ function ProductPriceHistory(){
                                 </span>
                                 <span className="li-container-label">
                                     Total purchased:<br/>
-                                    <strong>{key.TotalPrice}</strong>
+                                    <strong>{formatValueToMoney(key.TotalPrice)}</strong>
                                 </span>
                             </div>
                         </li>
