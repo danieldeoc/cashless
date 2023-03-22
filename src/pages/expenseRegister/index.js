@@ -327,15 +327,11 @@ function RegisterExpenses(){
         calcTotalPurchasePrice 
     } 
 
-    function show(){
-        console.log(expenseRegister)
-    }
-
     /////////////////////////////////
     /* INTERFACE */
     return(       
         <ExpenseContext.Provider value={globalVariables}>
-            <button onClick={show}>Show</button>
+            
             <PageTitle text="Expenses" />
             <PageBox>
                 <SectionTitle text="Add a new expense" />  

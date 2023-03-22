@@ -55,7 +55,31 @@ $box-shadow: 0 4px 8px 2px rgba(0,0,0,0.05);
 // transition
 $transition: all 500ms ease-in-out;
 
+////////////////////////////
+/// 
+.divIntro{
+  position: fixed;
+  width: 100%; height: 100%; z-index: 1000; box-sizing: border-box;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgb(142,68,173);
+  background: linear-gradient(146deg, rgba(142,68,173,1) 0%, rgba(155,89,182,1) 100%); 
+  padding: $xl;
+}
 
+.textIntro{
+  margin-top: 70%;
+}
+
+.divIntro h1{
+  color: #fff;
+  font-size: 4.5rem;
+  margin-bottom: $xs;
+  line-height: 2rem;
+}
+.divIntro p{
+  color: #fff;
+  font-size: 1.3rem;
+}
 
 ////////////////////////////////////////////////////////
 /// PAGE STYLES

@@ -14,19 +14,27 @@ function HomePage(){
 
     return(
         <>
-            <img src={homeintro} className="homeIntroSplash" alt="Cashless: finances for those with few money" />
 
-            <div className="bottom-box-align">
-                <PrimaryButton
-                        label="Sign-In"
-                        classes="purple"
-                        onClickHandler={goToLogin} /> 
+            <div className="divIntro">
 
-                <PrimaryButton
-                        label="Sign-Up"
-                        classes="green"
-                        onClickHandler={goToRegister} /> 
+                <div className="textIntro">
+                    <h1>Cashless</h1>
+                    <p>Finances fot those with a low budget.</p>
+                </div>
+
+                <div className="bottom-box-align">
+                    <PrimaryButton
+                            label="Sign-In"
+                            
+                            onClickHandler={goToLogin} /> 
+
+                    <PrimaryButton
+                            label="Sign-Up"
+                            classes="green"
+                            onClickHandler={goToRegister} /> 
+                </div>
             </div>
+
         </>
     )
 }

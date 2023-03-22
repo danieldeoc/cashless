@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.0.90 - android icons added
 - 0.0.89 - categories bug fix, account bug fix, add money link added, css styles added, link to support added
 - 0.0.88 - header and navigator menu added, categories page bug fixes, product page fields clean up after register, 
 - 0.0.87 - text label bug fixes, android app test version added (ionic and capacitor)
@@ -19,6 +20,13 @@ App developed for my to manange my finances
 - 0.0.4 - Expense register added, first beta version
 
 ## task list
+- include expense overview in bankaccount
+
+- validate data before submit
+- just enable button if data is valid
+- bank movements: add filter: all, debits, deposits
+- bank movements: add pagination or page limits
+- bank movements: add history chart
 
 Session
 - change session storage to cookies
