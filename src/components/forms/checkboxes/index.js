@@ -8,7 +8,7 @@ function CheckBoxGroups(props){
             <div className="checkbox-line" key={i}>
                 <input 
                     className="inputCheck"
-                    id={props.id+"_"+props.data} 
+                    id={props.id+"_"+data} 
                     type="checkbox" 
                     onClick={() => {
                         props.OnClickHandler(data)

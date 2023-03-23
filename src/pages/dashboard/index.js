@@ -49,7 +49,9 @@ function Dashboard(){
                         <div className="card" key={i}>
                             <h3>{key.Name}</h3>
                             <span className="balance">{key.CurrencySymbol} {formatValueTo2Digit(key.CurrentFunds)}</span>
-                            {returnAccountLink(key.id)}
+                            <div className="table-subline">
+                                {returnAccountLink(key.id)} <Link className="miniBtn no-margin" to={`/bankaccounts/movements/addmoney?accountId=${key.id}`}>Add money</Link>
+                            </div>
                         </div>
                     ))
                 )

@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.1.00 - bank account payment methods bug fix, getUnitsCatalog function moved to products.js, globalgetters file deleted. Accounts moved to appdoc firebase.
 - 0.0.90 - android icons added
 - 0.0.89 - categories bug fix, account bug fix, add money link added, css styles added, link to support added
 - 0.0.88 - header and navigator menu added, categories page bug fixes, product page fields clean up after register, 
@@ -18,6 +19,9 @@ App developed for my to manange my finances
 - 0.0.78 - Bank registration code upgraded, bank balance history created, bank balance update function added, expense register added, product price history added, general bug corrections
 - 0.0.41 -form clear after submit
 - 0.0.4 - Expense register added, first beta version
+
+## Bugs list
+- payments method not showing up in bank list account
 
 ## task list
 - include expense overview in bankaccount

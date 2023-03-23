@@ -1,24 +1,19 @@
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, Timestamp } from "firebase/firestore"
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { returnMessage } from "../tools/alertTools";
 
-
-
-// FIREBASE CONFIG
 const firebaseConfig = {
-    apiKey: "AIzaSyD6txBIF18GfL7EvXyouaADDFqK9rJd6cA",
-    authDomain: "cashless-appdoc.firebaseapp.com",
-    projectId: "cashless-appdoc",
-    storageBucket: "cashless-appdoc.appspot.com",
-    messagingSenderId: "3827619937",
-    appId: "1:3827619937:web:4b0bedbaa556b077897220",
-    measurementId: "G-9Y22LJCR68"
-};
+    apiKey: "AIzaSyC1BQg_aO360A1QUQiQaOAOatwBQqu6lu8",
+    authDomain: "cashless-20f70.firebaseapp.com",
+    projectId: "cashless-20f70",
+    storageBucket: "cashless-20f70.appspot.com",
+    messagingSenderId: "735776965674",
+    appId: "1:735776965674:web:22b9fae0f28ca91603af53",
+    measurementId: "G-JF2X1KH38Z"
+  };
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
 const auth = getAuth(app);
 
 
@@ -41,7 +36,7 @@ export async function logOut() {
 ////////////
 // manage session storage creation
 function sessionStorageControl(id, name, email){
-    console.log(id, name, email)
+    
     sessionStorage.setItem('User Auth', id);
     if(name){
         sessionStorage.setItem('User Name', name);
@@ -60,7 +55,7 @@ export function getAuthCredentias(){
     credentials.id = sessionStorage.getItem('User Auth')
     credentials.name = sessionStorage.getItem('User Name')
     credentials.email = sessionStorage.getItem('User E-mail')
-    console.log(credentials)
+    
     return credentials;
 }
 

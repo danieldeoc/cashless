@@ -4,22 +4,18 @@ import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addD
 import { returnMessage } from "../tools/alertTools";
 import { getAuthCredentias } from "./auth";
 
-// FIREBASE CONFIG
 const firebaseConfig = {
-    apiKey: "AIzaSyD6txBIF18GfL7EvXyouaADDFqK9rJd6cA",
-    authDomain: "cashless-appdoc.firebaseapp.com",
-    projectId: "cashless-appdoc",
-    storageBucket: "cashless-appdoc.appspot.com",
-    messagingSenderId: "3827619937",
-    appId: "1:3827619937:web:4b0bedbaa556b077897220",
-    measurementId: "G-9Y22LJCR68"
-};
+    apiKey: "AIzaSyC1BQg_aO360A1QUQiQaOAOatwBQqu6lu8",
+    authDomain: "cashless-20f70.firebaseapp.com",
+    projectId: "cashless-20f70",
+    storageBucket: "cashless-20f70.appspot.com",
+    messagingSenderId: "735776965674",
+    appId: "1:735776965674:web:22b9fae0f28ca91603af53",
+    measurementId: "G-JF2X1KH38Z"
+  };
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore();
-
-// const collectionRef = "bank_accounts";
-// const colRef = collection(db, collectionRef);
 
 const credentials = getAuthCredentias();
 const userDb = "userdb_"+credentials.id;

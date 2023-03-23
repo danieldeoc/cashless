@@ -1,10 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { 
-    
-    getProductUnitsCatalog,    
-    
-} from "../../globalOperators/globalGetters";
-
+import { getProductUnitsCatalog } from "../../firebase/product";
 import { getCategoriesCatalog } from "../../firebase/categories";
 import { addProductToCatalog, deleteProductFromCatalog, getProductCatalog } from "../../firebase/product"
 

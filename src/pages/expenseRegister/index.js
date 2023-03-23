@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { getAnalytics } from "firebase/analytics";
-import { getProductUnitsCatalog } from "../../globalOperators/globalGetters";
+import { getProductUnitsCatalog } from "../../firebase/product";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
 import { currencySymbol, formatValueTo2Digit, formatValueToMoney, randomNumber } from "../../tools/mathTools.js";

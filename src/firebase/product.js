@@ -1,3 +1,4 @@
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, query, getDoc, serverTimestamp, addDoc, orderBy, doc, updateDoc, deleteDoc, Timestamp, limit } from "firebase/firestore"
@@ -5,20 +6,19 @@ import { returnMessage } from "../tools/alertTools";
 import { getExpensesCatalog } from "./expenseRegistration";
 import { getAuthCredentias } from "./auth";
 
-// FIREBASE CONFIG
 const firebaseConfig = {
-    apiKey: "AIzaSyD6txBIF18GfL7EvXyouaADDFqK9rJd6cA",
-    authDomain: "cashless-appdoc.firebaseapp.com",
-    projectId: "cashless-appdoc",
-    storageBucket: "cashless-appdoc.appspot.com",
-    messagingSenderId: "3827619937",
-    appId: "1:3827619937:web:4b0bedbaa556b077897220",
-    measurementId: "G-9Y22LJCR68"
-};
+    apiKey: "AIzaSyC1BQg_aO360A1QUQiQaOAOatwBQqu6lu8",
+    authDomain: "cashless-20f70.firebaseapp.com",
+    projectId: "cashless-20f70",
+    storageBucket: "cashless-20f70.appspot.com",
+    messagingSenderId: "735776965674",
+    appId: "1:735776965674:web:22b9fae0f28ca91603af53",
+    measurementId: "G-JF2X1KH38Z"
+  };
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore();
-
 
 const credentials = getAuthCredentias();
 const userDb = "userdb_"+credentials.id;
@@ -217,4 +217,29 @@ export async function getProductPriceHistory(productId){
 
 
 
+/* ################################## */
+// Get products amount units
+/* ########################## */
+export async function getProductUnitsCatalog(){
+    let productUnits = [];
+    await getDoc(doc(db, userDb, "product_settings"))
+        .then( (snap) => {
+            snap.data().Weights.map( key => productUnits.push(key) );
+        }).catch( (err) => {
+            console.log("err")
+        });
+    return productUnits;
+}
+
+
+//////////////
+// Delets a product from the catalog
+export async function deletProductFromCatalog(id){
+    const docRef = doc(db, userDb, superDoc, collectionRef, id);
+    await deleteDoc(docRef)
+            .then( (res) => {
+                console.log("deleted");
+                return "deleted";
+            }).catch( (err) => console.log(err))
+}
 

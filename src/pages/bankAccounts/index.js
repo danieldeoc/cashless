@@ -141,7 +141,8 @@ function BankAccounts(){
                                 </span>
                                 <span className="li-container-label">
                                     <strong>Payment Methods:</strong> <br/>
-                                    {key.PaymentMethods.forEach( key => key)}
+                                    
+                                    {key.PaymentMethods.map( (method) => method+", ")}
                                 </span>
                                 <span className="li-container-label">
                                     <strong>Opening Date:</strong> <br/>
@@ -210,6 +211,7 @@ function BankAccounts(){
                 <SectionTitle text="Add a new account" />
 
                 <Input 
+                    id="accountName"
                     type="text"
                     label="Account name:"
                     placeholder="Insert a name"
@@ -220,9 +222,10 @@ function BankAccounts(){
                     />
 
                 <Input 
+                    id="initial"
                     type="number"
                     label="Initial Deposit:"
-                    placeholder="Insert a name"
+                    placeholder="Insert a initial deposit"
                     value={initialDeposit} 
                     onChangeHandler={(result) => { 
                         setInitialDeposit(Number(result))
@@ -267,6 +270,18 @@ function BankAccounts(){
                                     setBankPaymentsMethods([])
 
                                     setAccountsCatalog(res);
+
+                                    document.getElementById("accountName").value = "";
+                                    document.getElementById("initial").value = 0;
+                                    document.getElementById("currencyOptions").value = currencyCatalog[0];
+
+                                    document.getElementById("ckGroup_1_Debit Card").checked = false;
+                                    document.getElementById("ckGroup_1_Account Debit").checked = false;
+
+                                    
+                                    
+
+
                                 })
                             })                        
                         }} /> 
