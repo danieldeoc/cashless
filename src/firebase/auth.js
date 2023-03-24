@@ -54,7 +54,6 @@ export function getAuthCredentias(){
     credentials.id  = getCookie('User Auth')
     credentials.name= getCookie('User Name')
     credentials.email= getCookie('User E-mail')
-    console.log("credentials call")
     return credentials; 
 }
 

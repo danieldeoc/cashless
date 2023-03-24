@@ -30,8 +30,6 @@ function App(){
     const [credentials, setCredentials] = useState(getAuthCredentias())
      
     useEffect( () => {
-        
-        //setCredentials()
         if(credentials.id){
             setMenu(<Header />)
             setPadTop("app-container")

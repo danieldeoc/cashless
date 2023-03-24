@@ -27,6 +27,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 import ConfirmDialog from "../../components/elements/messages/confirm";
 import { getDate } from "../../tools/dateTools";
+import { addStore, getTopStores } from "../../firebase/stores";
 
 
 /* 
@@ -76,6 +77,8 @@ function RegisterExpenses(){
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
     const [totalPurchasePrice, setTotalPurchasePrice] = useState(formatValueToMoney("0.00"));
 
+    const [listStores, setListStores] = useState(undefined)
+
     const [generalId, setGeneralId] = useState(1);
     
     // expense register object
@@ -121,11 +124,35 @@ function RegisterExpenses(){
         await getExpensesCatalog("default").then(
             res => setExpensesCatalog(res)
         )
+        await getTopStores().then(
+            (response) => {
+                console.log(response)
+                if(response[0] != "No stores registered yet"){
+
+
+                    setListStores(
+                        response.map(
+                            (key, i) => (
+                                <span key={i} onClick={() => setStoreKey(key.Name) }>{key.Name}</span>
+                            )
+                        )
+                    )
+
+
+                }
+
+            }
+        )
     }
     const firstRender = useEffect( () => {
         fetchData()
     }, []);
 
+
+    function setStoreKey(name){
+        setExpenseStore(name)
+        document.getElementById("store").value = name;
+    }
 
 
     ///////////////////////
@@ -186,7 +213,6 @@ function RegisterExpenses(){
     function getProductsFromCatalog(products){
         if(productsCatalog && products){
             let list = [];
-            console.log("pc: ", productsCatalog)
             products.forEach( (key, i) => {
                 let product = productsCatalog.find( ({id}) => id == key)
                 if(product){
@@ -312,6 +338,8 @@ function RegisterExpenses(){
         
     };
 
+    
+
 
     /////////////////////////////////
     // Global Variables
@@ -345,6 +373,7 @@ function RegisterExpenses(){
         <ExpenseContext.Provider value={globalVariables}>
             
             <PageTitle text="Expenses" />
+
             <PageBox>
                 <SectionTitle text="Add a new expense" />  
                 <div id="productsBox" className="product-register-box">
@@ -365,6 +394,10 @@ function RegisterExpenses(){
                         setExpenseStore(storeName);
                     }}
                     />   
+
+                <div className="last-stores">
+                    {listStores}
+                </div>
             
                 <AccountSelects /> 
             

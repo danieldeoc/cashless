@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.1.02 - store regiser added
 - 0.1.01 - expense price register bug fix, expense register total price field added to allow price corrections, totalfunds counts added to the dashboard, session stored changed to cookies for better performance in app, insufienct funds alert added on expense register page in case of an account without suficient monney selected
 - 0.1.00 - bank account payment methods bug fix, getUnitsCatalog function moved to products.js, globalgetters file deleted. Accounts moved to appdoc firebase.
 - 0.0.90 - android icons added

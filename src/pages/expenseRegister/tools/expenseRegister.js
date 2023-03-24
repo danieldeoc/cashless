@@ -3,6 +3,7 @@ import { addProductToCatalogByExpenses, addProductPriceHistory, updateProductDoc
 import { expenseRegistration } from "../../../firebase/expenseRegistration";
 import { getAccountStatus, addBankExpense } from "../../../firebase/accounts";
 import { returnMessage } from "../../../tools/alertTools";
+import { addStore } from "../../../firebase/stores";
 
 export async function expenseRegisterProcess(expenses, productCatalog){
     let finalResult;
@@ -66,6 +67,9 @@ export async function expenseRegisterProcess(expenses, productCatalog){
                             CreatedAt: serverTimestamp(),
                             Hash: expenses.expenseHash
                         }
+
+                        await addStore(expenses.store);
+
                         //and add its to firebase
                         await expenseRegistration(newExpense).then( 
                             async (expenseId) => {
