@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import CategoriesSettings from './pages/categories/index';
 import ProductsCatalog from './pages/productsRegister/index';
 import Navigator from './components/elements/navigator';
@@ -22,20 +22,26 @@ import { getAuthCredentias } from "./firebase/auth";
 import Header from "./components/elements/header";
 import Footer from "./footer";
 
+export const CredentialsContext = createContext(null)
+
 function App(){
     const [menu, setMenu] = useState(undefined)
     const [padTop, setPadTop] = useState("")
+    const [credentials, setCredentials] = useState(getAuthCredentias())
      
     useEffect( () => {
         
-        const logged = getAuthCredentias()
-        if(logged.id){
+        //setCredentials()
+        if(credentials.id){
             setMenu(<Header />)
             setPadTop("app-container")
         }
     }, [])
 
+    const userGlobals = { credentials }
+
     return(
+        <CredentialsContext.Provider value={userGlobals}>
         <div className={padTop}>
             <Router>
                 {menu}
@@ -65,6 +71,7 @@ function App(){
             </Router> 
             <Footer />
         </div>
+        </CredentialsContext.Provider>
     )
 }
 

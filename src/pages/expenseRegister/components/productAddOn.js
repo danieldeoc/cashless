@@ -141,9 +141,11 @@ function ProductAddOn(props){
     }, [unitsCatalog])
 
     const priceConstants = useEffect(() => {
-        let price = Number(expensePrice);
+        let price = formatValueTo2Digit(Number(expensePrice));
         let ammount = Number(expenseAmount);
-        setExpenseTotalPrice(productTotalPrice(price, ammount));
+        let total = productTotalPrice(price, ammount);
+        setExpenseTotalPrice(total);
+        document.getElementById("totalprice"+tempId).value = total;
     }, [expensePrice, expenseAmount])
     
     
@@ -256,14 +258,24 @@ function ProductAddOn(props){
                     type="number"
                     steps="0.10"
                     onChangeHandler={ (key) => { 
-                        setExpensePrice(key);
-                        setExpenseLastPrice( Number(key) )
+                        let price = formatValueTo2Digit(Number(key))
+                        setExpensePrice(price);
+                        setExpenseLastPrice(price)
                     }}
                     /> 
 
-                    <div className="read-field-value money">
-                         {expenseTotalPrice} {expenseBankCurrency}
-                    </div>
+
+                <Input
+                    id={"totalprice"+tempId}
+                    label="Total: "
+                    value={expenseTotalPrice}
+                    type="number"
+                    steps="0.10"
+                    onChangeHandler={ (key) => { 
+                        let price = formatValueTo2Digit(Number(key))
+                        setExpenseTotalPrice(price)
+                    }}
+                    /> 
             </FormSection> 
             
         </ProductContext.Provider>

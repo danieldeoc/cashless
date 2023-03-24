@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { returnMessage } from "../tools/alertTools";
+import { getCookie } from "../tools/tools";
 
 const firebaseConfig = {
     apiKey: "AIzaSyC1BQg_aO360A1QUQiQaOAOatwBQqu6lu8",
@@ -21,10 +22,9 @@ const auth = getAuth(app);
 // Sign-out user
 export async function logOut() {
     await signOut(auth).then(() => {
-         console.log("loged out")
-         sessionStorage.removeItem('User Auth')
-         sessionStorage.removeItem('User Name')
-         sessionStorage.removeItem('User E-mail')
+         document.cookie = "User Auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+         document.cookie = "User Name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+         document.cookie = "User E-mail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
          window.location.href = "/";
          // Sign-out successful.
      }).catch((error) => {
@@ -36,13 +36,12 @@ export async function logOut() {
 ////////////
 // manage session storage creation
 function sessionStorageControl(id, name, email){
-    
-    sessionStorage.setItem('User Auth', id);
+    document.cookie = "User Auth="+id; 
     if(name){
-        sessionStorage.setItem('User Name', name);
+        document.cookie = "User Name="+name; 
     }
     if(email){
-        sessionStorage.setItem('User E-mail', email);
+       document.cookie = "User E-mail="+email; 
     }
 }
 
@@ -52,11 +51,11 @@ export function getAuthCredentias(){
         name: undefined,
         email: undefined
     }
-    credentials.id = sessionStorage.getItem('User Auth')
-    credentials.name = sessionStorage.getItem('User Name')
-    credentials.email = sessionStorage.getItem('User E-mail')
-    
-    return credentials;
+    credentials.id  = getCookie('User Auth')
+    credentials.name= getCookie('User Name')
+    credentials.email= getCookie('User E-mail')
+    console.log("credentials call")
+    return credentials; 
 }
 
 //////////////////////////////////////

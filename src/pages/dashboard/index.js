@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getAuthCredentias } from "../../firebase/auth";
 import { getAccountsCatalog } from "../../firebase/accounts";
 
@@ -7,27 +7,40 @@ import PageTitle from "../../components/elements/texts/pageTitle";
 import SectionTitle from "../../components/elements/texts/sectionTitle";
 import { Link } from "react-router-dom";
 import Loader from "../../components/elements/loader";
-import { formatValueTo2Digit } from "../../tools/mathTools";
+import { formatValueTo2Digit, formatValueToMoney } from "../../tools/mathTools";
+import { CredentialsContext } from "../../app";
 
 
 function Dashboard(){
 
     const [accountsCatalog, setAccountsCatalog] = useState(undefined)
     const [accountsList, setAccountsList] = useState(<Loader />)
-    const credentials = getAuthCredentias();
+    const [totalAvaliable, setTotalAvaliable] = useState(<Loader />)
 
-    const userName = credentials.name;
+    //const credentials = getAuthCredentias();
+    const { credentials } = useContext(CredentialsContext)
+
     console.log(credentials)
+    const userName = credentials.name;
     ///////////////
     // texts
     const welcome = `Welcome, ${userName}`;
 
+
+    function defineTotalAvaliable(catalog){
+        let totalFunds = 0;
+        catalog.forEach(account => {
+            totalFunds = totalFunds + account.CurrentFunds
+        });
+        setTotalAvaliable( formatValueToMoney(totalFunds) )
+    }
 
     const loadPage = useEffect( () => {
         const fetchData = async () => {
             await getAccountsCatalog().then(
                 (response) => {
                     setAccountsCatalog(response);
+                    defineTotalAvaliable(response)
                 }
             )
         }
@@ -64,8 +77,13 @@ function Dashboard(){
     return(
         <>
             <PageTitle text={welcome} />
+
+            <div className="card">
+                <h3>Total avaliable:</h3>
+                <span className="balance">{totalAvaliable}</span>
+            </div>
             
-                <SectionTitle text="Your accounts status" />
+                <SectionTitle text="Accounts balances:" />
                 {accountsList}
                 
 

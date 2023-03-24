@@ -70,6 +70,7 @@ function RegisterExpenses(){
     const [purchaseProductList, setPurchaseProductList] = useState([]);
     const [expenseStore, setExpenseStore] = useState(undefined); 
     const [expenseBankAccount, setExpenseBankAccount] = useState(undefined);
+    const [expenseBankAccountBalance, setExpenseBankAccountBalance] = useState(undefined);
     const [expenseAccountId, setExpenseAccountId] = useState(undefined);
     const [expenseBankCurrency, setExpenseBankCurrency] = useState(undefined)
     const [expensePayMethod, setExpensePayMethod] = useState(undefined);
@@ -84,6 +85,7 @@ function RegisterExpenses(){
         store: expenseStore,
         accountId: expenseAccountId,
         account: expenseBankAccount,
+        accountBalance: expenseBankAccountBalance,
         currency: expenseBankCurrency,
         paymenMethod: expensePayMethod,
         totalExpense: totalPurchasePrice
@@ -135,7 +137,6 @@ function RegisterExpenses(){
     let allowDelete = true;
     function deleteExpenseItemList(key){
         if(typeof key !== "string"){
-            console.log("infos:", key)
 
             let bank = accountCatalog.find( ({Name}) => Name == key.account);
             let deleteInfos = {
@@ -286,24 +287,29 @@ function RegisterExpenses(){
     /////////////////////////////////
     // Register Expense
     async function registerExpense(){
-        setReturningAlerts(<Loader type="fullscreen" /> )
-        setPurchaseProductList(<Loader />)
-        console.log(expenseRegister)
+        if(expenseBankAccountBalance >= totalPurchasePrice){
+            setReturningAlerts(<Loader type="fullscreen" /> )
+            setPurchaseProductList(<Loader />)
+            console.log(expenseRegister)
+            
+            await expenseRegisterProcess(expenseRegister, productsCatalog).then(
+                (response) => {
+                    setReturningAlerts(
+                        <Alert
+                            message={response.message}
+                            classes={response.classes}
+                            display={response.display}
+                            />
+                    );
+                    setTimeout(() => {
+                        window.location.href = "/expenses"
+                    }, 4000)
+                }
+            )
+        } else {
+            alert("Insuficient funds, choose another account.")
+        }
         
-        await expenseRegisterProcess(expenseRegister, productsCatalog).then(
-            (response) => {
-                setReturningAlerts(
-                    <Alert
-                        message={response.message}
-                        classes={response.classes}
-                        display={response.display}
-                        />
-                );
-                setTimeout(() => {
-                    window.location.href = "/expenses"
-                }, 4000)
-            }
-        ) 
     };
 
 
@@ -321,11 +327,17 @@ function RegisterExpenses(){
         expensePayMethod, setExpensePayMethod,
         expenseStore, setExpenseStore,
         expenseBankCurrency,
+        expenseBankAccountBalance, setExpenseBankAccountBalance,
         
         purchaseProductList, setPurchaseProductList, 
         totalPurchasePrice, setTotalPurchasePrice, 
         calcTotalPurchasePrice 
     } 
+
+    function show() {
+        console.log(expenseRegister)
+        
+    }
 
     /////////////////////////////////
     /* INTERFACE */
@@ -361,7 +373,7 @@ function RegisterExpenses(){
                 </div>
 
                 <PrimaryButton
-                        label="Add purchase"
+                        label="Register expense"
                         onClickHandler={registerExpense} />
             </PageBox>
 

@@ -3,6 +3,7 @@
 App developed for my to manange my finances
 
 ## versions
+- 0.1.01 - expense price register bug fix, expense register total price field added to allow price corrections, totalfunds counts added to the dashboard, session stored changed to cookies for better performance in app, insufienct funds alert added on expense register page in case of an account without suficient monney selected
 - 0.1.00 - bank account payment methods bug fix, getUnitsCatalog function moved to products.js, globalgetters file deleted. Accounts moved to appdoc firebase.
 - 0.0.90 - android icons added
 - 0.0.89 - categories bug fix, account bug fix, add money link added, css styles added, link to support added
@@ -32,8 +33,6 @@ App developed for my to manange my finances
 - bank movements: add pagination or page limits
 - bank movements: add history chart
 
-Session
-- change session storage to cookies
 
 Categories
 - on add subcategorie alert gets null in message (use useref)
@@ -49,8 +48,6 @@ Bank Account register
 - create an option to close the account if there are movments
 - get only open accounts
 - set bank currency symbol
-- remove page reload on add bank account
-
 
 Expense register
 - cannot register an expense in insufient funds
@@ -68,3 +65,5 @@ Expense register
 ## Future Improvments
 # Categories Register
 - Add contract/expand in ul list
+- discont: allow the difference between expense total price and price be registered as discount - se chesse 0.060kg at 10.59 payd 0.64 when it was 0.635
+- 
