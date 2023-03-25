@@ -16,9 +16,8 @@ function LoginPage(){
 
     return(
         <>
-            <PageTitle text="Create an account" />
+            <PageTitle text="Login to your account" />
             <PageBox>
-                <SectionTitle text="Insert your data" />  
 
                 <Input 
                     type="email"

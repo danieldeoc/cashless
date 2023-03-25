@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from "react";
 import { ExpenseContext}  from '../index.js';
 import SelectBox from "../../../components/forms/select.js";
-import { currencySymbol } from "../../../tools/mathTools.js";
+import { currencySymbol, formatValueTo2Digit } from "../../../tools/mathTools.js";
 
 function AccountSelects(){
     /* ################################# */
@@ -56,7 +56,7 @@ function AccountSelects(){
                 }}  />  
 
             <div className="read-field-value money">
-                    Avaliable:  {accountFunds} {accountSymbol}
+                    Avaliable:  {formatValueTo2Digit(accountFunds)} {accountSymbol}
             </div>
 
             <SelectBox 

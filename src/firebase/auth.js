@@ -22,9 +22,9 @@ const auth = getAuth(app);
 // Sign-out user
 export async function logOut() {
     await signOut(auth).then(() => {
-         document.cookie = "User Auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-         document.cookie = "User Name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-         document.cookie = "User E-mail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+         document.cookie = "User Auth=; expires=Thu, 01 Jan 2100 00:00:00 UTC; path=/;";
+         document.cookie = "User Name=; expires=Thu, 01 Jan 2100 00:00:00 UTC; path=/;";
+         document.cookie = "User E-mail=; expires=Thu, 01 Jan 2100 00:00:00 UTC; path=/;";
          window.location.href = "/";
          // Sign-out successful.
      }).catch((error) => {
